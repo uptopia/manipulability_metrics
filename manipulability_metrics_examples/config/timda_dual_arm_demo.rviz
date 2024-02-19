@@ -11,6 +11,7 @@ Panels:
         - /TF1
         - /TF1/Frames1
         - /TF1/Tree1
+        - /MarkerArray1
       Splitter Ratio: 0.5
     Tree Height: 555
   - Class: rviz/Selection
@@ -300,6 +301,8 @@ Visualization Manager:
           Value: false
         slide_right:
           Value: false
+        tcp_frame:
+          Value: true
         world:
           Value: false
       Marker Alpha: 1
@@ -351,7 +354,18 @@ Visualization Manager:
                                   {}
                                 r_end_Link5:
                                   {}
+            tcp_frame:
+              {}
       Update Interval: 0
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /manipulability_markers
+      Name: MarkerArray
+      Namespaces:
+        desired_rotational_ellipsoid: true
+        desired_translational_ellipsoid: true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
@@ -381,7 +395,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.0837254524230957
+      Distance: 5.159226894378662
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -397,9 +411,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: -0.05460147559642792
+      Pitch: 0.7753980159759521
       Target Frame: <Fixed Frame>
-      Yaw: 4.070403575897217
+      Yaw: 4.830417156219482
     Saved: ~
 Window Geometry:
   Displays:
