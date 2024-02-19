@@ -1,8 +1,10 @@
 <launch>
 
-  <arg name="model" default="$(find manipulability_metrics_examples)/urdf/panda.urdf.xacro" />
+  <!-- <arg name="model" default="$(find manipulability_metrics_examples)/urdf/panda.urdf.xacro" /> -->
+  <arg name="model" default="$(find franka_description)/robots/panda/panda.urdf.xacro" />
   <arg name="root_link" default="panda_link0" />
-  <arg name="tip_link" default="panda_hand" />
+  <!-- <arg name="tip_link" default="panda_hand" /> -->
+  <arg name="tip_link" default="panda_link8" />
   <arg name="chain_joints_file" default="$(find manipulability_metrics_examples)/config/panda_joints.yaml" />
   <arg name="zeros" default="$(find manipulability_metrics_examples)/config/panda_zeros.yaml" />
 
