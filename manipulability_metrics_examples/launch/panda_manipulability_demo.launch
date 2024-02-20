@@ -1,10 +1,13 @@
 <launch>
 
-  <!-- <arg name="model" default="$(find manipulability_metrics_examples)/urdf/panda.urdf.xacro" /> -->
-  <arg name="model" default="$(find franka_description)/robots/panda/panda.urdf.xacro" />
+  <!-- use github xacro -->
+  <arg name="model" default="$(find manipulability_metrics_examples)/urdf/panda.urdf.xacro" />
+
+  <!-- use franka xacro: /opt/ros/noetic/share/franka_description/robots/panda -->
+  <!-- <arg name="model" default="$(find franka_description)/robots/panda/panda.urdf.xacro" /> -->
   <arg name="root_link" default="panda_link0" />
-  <!-- <arg name="tip_link" default="panda_hand" /> -->
   <arg name="tip_link" default="panda_link8" />
+
   <arg name="chain_joints_file" default="$(find manipulability_metrics_examples)/config/panda_joints.yaml" />
   <arg name="zeros" default="$(find manipulability_metrics_examples)/config/panda_zeros.yaml" />
 
@@ -14,8 +17,11 @@
     <rosparam param="zeros" file="$(arg zeros)" />
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/demos.rviz" required="true" />
 
+  <!-- Open rviz with predefined settings -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/panda_demo.rviz" required="true" />
+
+  <!-- manipulability_metrics -->
   <node name="panda_manipulability_demo" pkg="manipulability_metrics_examples" type="panda_manipulability_demo" output="screen">
     <param name="root_link" value="$(arg root_link)" />
     <param name="tip_link" value="$(arg tip_link)" />

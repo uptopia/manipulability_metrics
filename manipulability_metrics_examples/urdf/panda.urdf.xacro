@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="panda">
-  <xacro:include filename="$(find franka_description)/robots/panda_arm.xacro"/>
-  <xacro:include filename="$(find franka_description)/robots/hand.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/common/franka_arm.xacro"/>
+  <xacro:include filename="$(find franka_description)/robots/common/franka_hand.xacro"/>
+
+  <xacro:arg name="arm_id" default="panda" />
+
   <link name="base_link" />
-  <xacro:panda_arm connected_to="base_link" />
-  <xacro:hand ns="panda" rpy="0 0 ${-pi/4}" connected_to="panda_link8"/>
+  
+  <xacro:franka_arm arm_id="$(arg arm_id)" connected_to="base_link" 
+                    joint_limits="${xacro.load_yaml('$(find franka_description)/robots/panda/joint_limits.yaml')}"/>
+  <xacro:franka_hand arm_id="$(arg arm_id)" connected_to="panda_link8"
+                     rpy="0 0 ${-pi/4}" />
 </robot>

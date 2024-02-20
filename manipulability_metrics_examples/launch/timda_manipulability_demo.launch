@@ -2,40 +2,32 @@
 
   <arg name="model" default="$(find manipulability_metrics_examples)/urdf/timda_dual_arm.xacro" />
   <arg name="root_link" default="base_link" />
-  <arg name="left_tip_link" default="l_tool_link" />
-  <arg name="right_tip_link" default="r_tool_link" />
+  <arg name="left_tip_link" default="l_tool_link7" />
+  <arg name="right_tip_link" default="r_tool_link7" />
   <arg name="left_chain_joints_file" default="$(find manipulability_metrics_examples)/config/timda_left_joints.yaml" />
   <arg name="right_chain_joints_file" default="$(find manipulability_metrics_examples)/config/timda_right_joints.yaml" />
   <arg name="zeros" default="$(find manipulability_metrics_examples)/config/timda_zeros.yaml" />
-  <arg name="tcp_xyzypr" default="0.5 0 0.5 0 0 0" />
+  <!-- <arg name="tcp_xyzypr" default="0.5 0 2.5 0 0 0" /> -->
   <arg name="gui" default="true"/>
 
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
   <param name="use_gui" value="$(arg gui)"/>
-  <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
   <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
     <rosparam param="zeros" file="$(arg zeros)" />
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+  <!-- <node name="tcp_frame_publisher" pkg="tf2_ros" type="static_transform_publisher" args="$(arg tcp_xyzypr) $(arg root_link) tcp_frame" /> -->
 
   <!-- Open rviz with predefined settings -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/timda_dual_arm_demo.rviz" required="true"/>
-
-  <node name="tcp_frame_publisher" pkg="tf2_ros" type="static_transform_publisher" args="$(arg tcp_xyzypr) $(arg root_link) tcp_frame" />
   
-  <node name="dual_panda_manipulability_demo" pkg="manipulability_metrics_examples" type="dual_panda_manipulability_demo" output="screen">
+  <!-- manipulability_metrics -->
+  <node name="timda_manipulability_demo" pkg="manipulability_metrics_examples" type="timda_manipulability_demo" output="screen">
     <param name="root_link" value="$(arg root_link)" />
     <param name="left_tip_link" value="$(arg left_tip_link)" />
     <param name="right_tip_link" value="$(arg right_tip_link)" />
     <rosparam param="left_chain_joints" file="$(arg left_chain_joints_file)" />
     <rosparam param="right_chain_joints" file="$(arg right_chain_joints_file)" />
   </node>
-  
-  <!-- 
-  <node name="panda_manipulability_demo" pkg="manipulability_metrics_examples" type="panda_manipulability_demo" output="screen">
-    <param name="root_link" value="$(arg root_link)" />
-    <param name="tip_link" value="$(arg tip_link)" />
-    <rosparam param="chain_joints" file="$(arg chain_joints_file)" />
-  </node> -->
 
 </launch>
