@@ -1,0 +1,33 @@
+<launch>
+  <arg
+    name="model" />
+  <arg
+    name="gui"
+    default="False" />
+  <!-- <param
+    name="robot_description"
+    textfile="$(find blue_arm_description)/urdf/blue_arm.urdf" /> -->
+  <param name="robot_description" 
+    command="$(find xacro)/xacro '$(find blue_arm_description)/urdf/blue_arm.xacro'" />
+  <param
+    name="use_gui"
+    value="$(arg gui)" />
+  <!-- <node 
+    pkg="tf2_ros" 
+    type="static_transform_publisher" 
+    name="virtual_joint_broadcaster_1" 
+    args="0 0 0 0 0 0 world panda_link0" /> -->
+  <node
+    name="joint_state_publisher"
+    pkg="joint_state_publisher"
+    type="joint_state_publisher" />
+  <node
+    name="robot_state_publisher"
+    pkg="robot_state_publisher"
+    type="robot_state_publisher" />
+  <node
+    name="rviz"
+    pkg="rviz"
+    type="rviz"
+    args="-d $(find blue_arm_description)/config/view_robot.rviz" />
+</launch>

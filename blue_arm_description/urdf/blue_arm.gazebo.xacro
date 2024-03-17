@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<robot name="blue_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <physics type='ode'>
+    <max_step_size>0.001</max_step_size>
+    <real_time_factor>0.1</real_time_factor>
+    <real_time_update_rate>1000</real_time_update_rate>
+    <gravity>0 0 -9.8</gravity>
+  </physics>
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace></robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="base_link">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Blue</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+  <gazebo reference="link_1">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Gray</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+
+  <gazebo reference="link_2">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Blue</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+  <gazebo reference="link_3">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Gray</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+  <gazebo reference="link_4">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Blue</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+  <gazebo reference="link_5">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Gray</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+  <gazebo reference="link_6">
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
+    <material>Gazebo/Blue</material>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+
+  <gazebo reference="joint_1">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="joint_2">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="joint_3">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="joint_4">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="joint_5">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="joint_6">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="joint_7">
+    <implicitSpringDamper>True</implicitSpringDamper>
+  </gazebo>
+
+</robot>

@@ -1,0 +1,28 @@
+<launch>
+  <arg name="gazebo_gui" default="true"/>
+  <arg name="paused" default="true"/>
+  <arg name="urdf_path" default="$(find blue_arm_description)/urdf/blue_arm.xacro"/>
+  <include
+    file="$(find gazebo_ros)/launch/empty_world.launch" >
+    <arg name="world_name" default="worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gazebo_gui)"/>
+  </include>
+
+  <param name="robot_description" 
+    command="$(find xacro)/xacro '$(arg urdf_path)'" />
+  <node
+    name="urdf_spawner"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    respawn="false"
+    output="screen"
+    args="-urdf -model blue_arm -param robot_description" />
+  <node
+    name="fake_joint_calibration"
+    pkg="rostopic"
+    type="rostopic"
+    args="pub /calibrated std_msgs/Bool true" />
+    
+  <include file="$(find blue_arm_moveit)/launch/ros_controllers.launch"/>
+</launch>

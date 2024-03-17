@@ -21,7 +21,7 @@
     <origin xyz="0.0 0.1151 0.0" rpy="1.57 3.1415926 3.1415926" />
   </xacro:single_arm>
 
-  <xacro:suction side="r"  parent="r_Link_6">
+  <xacro:suction side="r"  >
     <origin xyz="0 -0.016 0" rpy="0 0 -1.57" />
   </xacro:suction>
 
@@ -30,7 +30,7 @@
     <origin xyz="0.0 0.1151 0.0" rpy="-1.57 0 0" />
   </xacro:single_arm>
 
-  <xacro:suction side="l"  parent="l_Link_6">
+  <xacro:suction side="l"  >
     <origin xyz="0 0.016 0" rpy="0 0 1.57" />
   </xacro:suction>
 

@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<robot name="blue_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- parses the transmission tags and loads the appropriate hardware interfaces and controller manager -->
+    
+  
+  <!-- <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="table_arm_transmission" params="side"> -->
+
+  <!-- all joint transmission -->
+  <transmission name="trans_joint_1">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_1">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_1_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+  <transmission name="trans_joint_2">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_2">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_2_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+  <transmission name="trans_joint_3">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_3">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_3_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+  <transmission name="trans_joint_4">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_4">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_4_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+  <transmission name="trans_joint_5">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_5">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_5_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+  <transmission name="trans_joint_6">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_6">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_6_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+  <transmission name="trans_joint_7">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_7">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_7_motor">
+          <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+          <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+  </transmission>
+</robot>

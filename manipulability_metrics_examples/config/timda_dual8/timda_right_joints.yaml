@@ -1,51 +1,60 @@
-r_joint_1:
-  limit:
-    lower:     -2.8973
-    upper:      2.8973
-    velocity:   2.1750
-    effort:    87.0
+- joint_right
+- r_joint_1
+- r_joint_2
+- r_joint_3
+- r_joint_4
+- r_joint_5
+- r_joint_6
+- r_joint_7
 
-r_joint_2:
-  limit:
-    lower:     -1.7628
-    upper:      1.7628
-    velocity:   2.1750
-    effort:    87.0
+# r_joint_1:
+#   limit:
+#     lower:     -2.8973
+#     upper:      2.8973
+#     velocity:   2.1750
+#     effort:    87.0
 
-r_joint_3:
-  limit:
-    lower:     -2.8973
-    upper:      2.8973
-    velocity:   2.1750
-    effort:    87.0
+# r_joint_2:
+#   limit:
+#     lower:     -1.7628
+#     upper:      1.7628
+#     velocity:   2.1750
+#     effort:    87.0
 
-r_joint_4:
-  limit:
-    lower:     -3.0718
-    upper:     -0.0698
-    velocity:   2.1750
-    effort:    87.0
+# r_joint_3:
+#   limit:
+#     lower:     -2.8973
+#     upper:      2.8973
+#     velocity:   2.1750
+#     effort:    87.0
 
-r_joint_5:
-  limit:
-    lower:     -2.8973
-    upper:      2.8973
-    velocity:   2.6100
-    effort:    12.0
+# r_joint_4:
+#   limit:
+#     lower:     -3.0718
+#     upper:     -0.0698
+#     velocity:   2.1750
+#     effort:    87.0
 
-r_joint_6:
-  limit:
-    lower:     -0.0175
-    upper:      3.7525
-    velocity:   2.6100
-    effort:    12.0
+# r_joint_5:
+#   limit:
+#     lower:     -2.8973
+#     upper:      2.8973
+#     velocity:   2.6100
+#     effort:    12.0
 
-r_joint_7:
-  limit:
-    lower:     -2.8973
-    upper:      2.8973
-    velocity:   2.6100
-    effort:    12.0
+# r_joint_6:
+#   limit:
+#     lower:     -0.0175
+#     upper:      3.7525
+#     velocity:   2.6100
+#     effort:    12.0
+
+# r_joint_7:
+#   limit:
+#     lower:     -2.8973
+#     upper:      2.8973
+#     velocity:   2.6100
+#     effort:    12.0
 
 # # joint_limits.yaml allows the dynamics properties specified in the URDF to be overwritten or augmented as needed
 

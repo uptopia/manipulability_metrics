@@ -28,6 +28,8 @@
 #include <visualization_msgs/MarkerArray.h>
 
 #include <ros/ros.h>
+#include <iostream>
+using namespace std;
 
 int main(int argc, char** argv)
 {
@@ -38,6 +40,9 @@ int main(int argc, char** argv)
 
   const auto model = utils::getModel(p_nh);
   const auto root_link = utils::getParam<std::string>(p_nh, "root_link");
+//   const auto r_root_link = utils::getParam<std::string>(p_nh, "r_root_link");
+//   cout <<root_link<<endl;
+
   const auto left_tip_link = utils::getParam<std::string>(p_nh, "left_tip_link");
   const auto right_tip_link = utils::getParam<std::string>(p_nh, "right_tip_link");
   const auto left_chain_joints = utils::getParam<std::vector<std::string>>(p_nh, "left_chain_joints");

@@ -6,14 +6,11 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
-        - /RobotModel1/Links1
         - /TF1
         - /TF1/Frames1
-        - /TF1/Tree1
         - /MarkerArray1
       Splitter Ratio: 0.5
-    Tree Height: 555
+    Tree Height: 725
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -57,7 +54,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1
+    - Alpha: 0.5
       Class: rviz/RobotModel
       Collision Enabled: false
       Enabled: true
@@ -71,161 +68,114 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        l_Base:
+        panda_hand:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_Link_1:
+        panda_hand_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_Link_2:
+        panda_hand_tcp:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        panda_leftfinger:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_Link_3:
+        panda_link0:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_Link_4:
+        panda_link0_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_Link_5:
+        panda_link1:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_Link_6:
+        panda_link1_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_end_Link1:
+        panda_link2:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_end_Link2:
+        panda_link2_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_end_Link3:
+        panda_link3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_end_Link4:
+        panda_link3_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_end_Link5:
+        panda_link4:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_tool_end_Link:
+        panda_link4_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        l_tool_link:
+        panda_link5:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Base:
+        panda_link5_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Link_1:
+        panda_link6:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Link_2:
+        panda_link6_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Link_3:
+        panda_link7:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Link_4:
+        panda_link7_sc:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Link_5:
+        panda_link8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        panda_rightfinger:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        r_Link_6:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_end_Link1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_end_Link2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_end_Link3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_end_Link4:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_end_Link5:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_tool_end_Link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        r_tool_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        slide_left:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        slide_right:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -241,121 +191,92 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: true
-        l_Base:
+        panda_hand:
+          Value: false
+        panda_hand_sc:
+          Value: false
+        panda_hand_tcp:
           Value: true
-        l_Link_1:
+        panda_leftfinger:
           Value: false
-        l_Link_2:
-          Value: false
-        l_Link_3:
-          Value: false
-        l_Link_4:
-          Value: false
-        l_Link_5:
-          Value: false
-        l_Link_6:
-          Value: false
-        l_end_Link1:
-          Value: false
-        l_end_Link2:
-          Value: false
-        l_end_Link3:
-          Value: false
-        l_end_Link4:
-          Value: false
-        l_end_Link5:
-          Value: false
-        l_tool_end_Link:
-          Value: false
-        l_tool_link:
+        panda_link0:
           Value: true
-        r_Base:
-          Value: true
-        r_Link_1:
+        panda_link0_sc:
           Value: false
-        r_Link_2:
+        panda_link1:
           Value: false
-        r_Link_3:
+        panda_link1_sc:
           Value: false
-        r_Link_4:
+        panda_link2:
           Value: false
-        r_Link_5:
+        panda_link2_sc:
           Value: false
-        r_Link_6:
+        panda_link3:
           Value: false
-        r_end_Link1:
+        panda_link3_sc:
           Value: false
-        r_end_Link2:
+        panda_link4:
           Value: false
-        r_end_Link3:
+        panda_link4_sc:
           Value: false
-        r_end_Link4:
+        panda_link5:
           Value: false
-        r_end_Link5:
+        panda_link5_sc:
           Value: false
-        r_tool_end_Link:
+        panda_link6:
           Value: false
-        r_tool_link:
-          Value: true
-        slide_left:
+        panda_link6_sc:
           Value: false
-        slide_right:
+        panda_link7:
           Value: false
-        tcp_frame:
-          Value: true
-        world:
+        panda_link7_sc:
+          Value: false
+        panda_link8:
+          Value: false
+        panda_rightfinger:
           Value: false
       Marker Alpha: 1
-      Marker Scale: 1
+      Marker Scale: 0.5
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          base_link:
-            slide_left:
-              l_Base:
-                l_Link_1:
-                  l_Link_2:
-                    l_Link_3:
-                      l_Link_4:
-                        l_Link_5:
-                          l_Link_6:
-                            l_tool_link:
-                              l_tool_end_Link:
-                                l_end_Link1:
-                                  {}
-                                l_end_Link2:
-                                  {}
-                                l_end_Link3:
-                                  {}
-                                l_end_Link4:
-                                  {}
-                                l_end_Link5:
-                                  {}
-            slide_right:
-              r_Base:
-                r_Link_1:
-                  r_Link_2:
-                    r_Link_3:
-                      r_Link_4:
-                        r_Link_5:
-                          r_Link_6:
-                            r_tool_link:
-                              r_tool_end_Link:
-                                r_end_Link1:
-                                  {}
-                                r_end_Link2:
-                                  {}
-                                r_end_Link3:
-                                  {}
-                                r_end_Link4:
-                                  {}
-                                r_end_Link5:
-                                  {}
-            tcp_frame:
+        base_link:
+          panda_link0:
+            panda_link0_sc:
               {}
+            panda_link1:
+              panda_link1_sc:
+                {}
+              panda_link2:
+                panda_link2_sc:
+                  {}
+                panda_link3:
+                  panda_link3_sc:
+                    {}
+                  panda_link4:
+                    panda_link4_sc:
+                      {}
+                    panda_link5:
+                      panda_link5_sc:
+                        {}
+                      panda_link6:
+                        panda_link6_sc:
+                          {}
+                        panda_link7:
+                          panda_link7_sc:
+                            {}
+                          panda_link8:
+                            panda_hand:
+                              panda_hand_sc:
+                                {}
+                              panda_hand_tcp:
+                                {}
+                              panda_leftfinger:
+                                {}
+                              panda_rightfinger:
+                                {}
       Update Interval: 0
       Value: true
     - Class: rviz/MarkerArray
@@ -365,13 +286,15 @@ Visualization Manager:
       Namespaces:
         desired_rotational_ellipsoid: true
         desired_translational_ellipsoid: true
+        rotational_ellipsoid: true
+        translational_ellipsoid: true
       Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: panda_link0
     Frame Rate: 30
   Name: root
   Tools:
@@ -395,7 +318,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.159226894378662
+      Distance: 1.9378536939620972
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -403,25 +326,25 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.06635015457868576
-        Y: 0.2879985570907593
-        Z: 0.4986936151981354
+        X: 0.3415309488773346
+        Y: -0.03543258085846901
+        Z: 0.384804904460907
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7753980159759521
+      Pitch: 0.20039860904216766
       Target Frame: <Fixed Frame>
-      Yaw: 4.830417156219482
+      Yaw: 1.6653870344161987
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 846
+  Height: 1016
   Hide Left Dock: false
-  Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd000000040000000000000156000002b4fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b000002b4000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000002b4fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003b000002b4000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004b00000003efc0100000002fb0000000800540069006d00650100000000000004b00000030700fffffffb0000000800540069006d006501000000000000045000000000000000000000023f000002b400000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Hide Right Dock: true
+  QMainWindow State: 000000ff00000000fd0000000400000000000001560000035efc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b0000035e000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c0000026100000001000001000000037afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b0000037a000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000035c0000003efc0100000002fb0000000800540069006d006501000000000000035c0000030700fffffffb0000000800540069006d00650100000000000004500000000000000000000002000000035e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -429,7 +352,7 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Views:
-    collapsed: false
-  Width: 1200
-  X: 64
+    collapsed: true
+  Width: 860
+  X: 1060
   Y: 27

@@ -8,8 +8,8 @@
   <arg name="root_link" default="panda_link0" />
   <arg name="tip_link" default="panda_link8" />
 
-  <arg name="chain_joints_file" default="$(find manipulability_metrics_examples)/config/panda_joints.yaml" />
-  <arg name="zeros" default="$(find manipulability_metrics_examples)/config/panda_zeros.yaml" />
+  <arg name="chain_joints_file" default="$(find manipulability_metrics_examples)/config/panda/panda_joints.yaml" />
+  <arg name="zeros" default="$(find manipulability_metrics_examples)/config/panda/panda_zeros.yaml" />
 
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
@@ -19,7 +19,7 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
   <!-- Open rviz with predefined settings -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/panda_demo.rviz" required="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/panda/panda_demo.rviz" required="true" />
 
   <!-- manipulability_metrics -->
   <node name="panda_manipulability_demo" pkg="manipulability_metrics_examples" type="panda_manipulability_demo" output="screen">

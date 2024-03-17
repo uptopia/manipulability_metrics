@@ -2,12 +2,14 @@
 
   <arg name="model" default="$(find manipulability_metrics_examples)/urdf/timda_dual_arm.xacro" />
   <arg name="root_link" default="base_link" />
-  <arg name="left_tip_link" default="l_tool_link7" />
-  <arg name="right_tip_link" default="r_tool_link7" />
-  <arg name="left_chain_joints_file" default="$(find manipulability_metrics_examples)/config/timda_left_joints.yaml" />
-  <arg name="right_chain_joints_file" default="$(find manipulability_metrics_examples)/config/timda_right_joints.yaml" />
-  <arg name="zeros" default="$(find manipulability_metrics_examples)/config/timda_zeros.yaml" />
-  <!-- <arg name="tcp_xyzypr" default="0.5 0 2.5 0 0 0" /> -->
+  <!-- <arg name="r_root_link" default="world" /> -->
+
+  <arg name="left_tip_link" default="l_tool_link" />
+  <arg name="right_tip_link" default="r_tool_link" />
+  <arg name="left_chain_joints_file" default="$(find manipulability_metrics_examples)/config/timda_dual8/timda_left_joints.yaml" />
+  <arg name="right_chain_joints_file" default="$(find manipulability_metrics_examples)/config/timda_dual8/timda_right_joints.yaml" />
+  <arg name="zeros" default="$(find manipulability_metrics_examples)/config/timda_dual8/timda_zeros.yaml" />
+  <arg name="tcp_xyzypr" default="0.5 0 0.5 0 0 0" />
   <arg name="gui" default="true"/>
 
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
@@ -16,10 +18,10 @@
     <rosparam param="zeros" file="$(arg zeros)" />
   </node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-  <!-- <node name="tcp_frame_publisher" pkg="tf2_ros" type="static_transform_publisher" args="$(arg tcp_xyzypr) $(arg root_link) tcp_frame" /> -->
+  <node name="tcp_frame_publisher" pkg="tf2_ros" type="static_transform_publisher" args="$(arg tcp_xyzypr) $(arg root_link) tcp_frame" />
 
   <!-- Open rviz with predefined settings -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/timda_dual_arm_demo.rviz" required="true"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/timda_dual8/timda_dual_arm_demo.rviz" required="true"/>
   
   <!-- manipulability_metrics -->
   <node name="timda_manipulability_demo" pkg="manipulability_metrics_examples" type="timda_manipulability_demo" output="screen">

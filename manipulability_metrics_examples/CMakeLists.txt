@@ -17,13 +17,21 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+# Single Arm
 add_executable(panda_manipulability_demo src/panda_manipulability_demo.cpp)
 target_link_libraries(panda_manipulability_demo ${catkin_LIBRARIES})
 
+add_executable(blue_arm_manipulability_demo src/blue_arm_manipulability_demo.cpp)
+target_link_libraries(blue_arm_manipulability_demo ${catkin_LIBRARIES})
+
+# Dual Arm
 add_executable(dual_panda_manipulability_demo src/dual_panda_manipulability_demo.cpp)
 target_link_libraries(dual_panda_manipulability_demo ${catkin_LIBRARIES})
 
-install(TARGETS panda_manipulability_demo dual_panda_manipulability_demo
+add_executable(timda_manipulability_demo src/timda_manipulability_demo.cpp)
+target_link_libraries(timda_manipulability_demo ${catkin_LIBRARIES})
+
+install(TARGETS panda_manipulability_demo dual_panda_manipulability_demo timda_manipulability_demo blue_arm_manipulability_demo
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
