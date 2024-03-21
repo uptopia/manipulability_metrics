@@ -3,7 +3,7 @@
   <!-- use github xacro -->
   <arg name="model" default="$(find manipulability_metrics_examples)/urdf/blue_arm.xacro" />
 
-  <arg name="root_link" default="base_link" />  <!-- blue_arm_base_link???-->
+  <arg name="root_link" default="base_link" />
   <arg name="tip_link" default="link_7" />
 
   <arg name="chain_joints_file" default="$(find manipulability_metrics_examples)/config/blue_arm/blue_arm_joints.yaml" />
