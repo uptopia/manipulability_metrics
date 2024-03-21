@@ -33,7 +33,7 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "panda_manipulability_demo");
+  ros::init(argc, argv, "single_manipulability_demo");
 
   auto nh = ros::NodeHandle{};
   auto p_nh = ros::NodeHandle{ "~" };

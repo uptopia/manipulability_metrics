@@ -19,7 +19,7 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/ur5/ur5_demo.rviz" required="true" />
 
   <!-- manipulability_metrics -->
-  <node name="ur5_manipulability_demo" pkg="manipulability_metrics_examples" type="ur5_manipulability_demo" output="screen">
+  <node name="single_manipulability_demo" pkg="manipulability_metrics_examples" type="single_manipulability_demo" output="screen">
     <param name="root_link" value="$(arg root_link)" />
     <param name="tip_link" value="$(arg tip_link)" />
     <rosparam param="chain_joints" file="$(arg chain_joints_file)" />

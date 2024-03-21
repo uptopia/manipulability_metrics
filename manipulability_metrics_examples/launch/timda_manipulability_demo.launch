@@ -24,7 +24,7 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find manipulability_metrics_examples)/config/timda_dual8/timda_dual_arm_demo.rviz" required="true"/>
   
   <!-- manipulability_metrics -->
-  <node name="timda_manipulability_demo" pkg="manipulability_metrics_examples" type="timda_manipulability_demo" output="screen">
+  <node name="dual_manipulability_demo" pkg="manipulability_metrics_examples" type="dual_manipulability_demo" output="screen">
     <param name="root_link" value="$(arg root_link)" />
     <param name="left_tip_link" value="$(arg left_tip_link)" />
     <param name="right_tip_link" value="$(arg right_tip_link)" />
