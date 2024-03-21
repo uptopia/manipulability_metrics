@@ -2,7 +2,7 @@
 
   <arg name="model" default="$(find ur_description)/urdf/ur.urdf.xacro name:=ur5" />
 
-  <arg name="root_link" default="shoulder_link" />
+  <arg name="root_link" default="base_link" />
   <arg name="tip_link" default="wrist_3_link" />
 
   <arg name="chain_joints_file" default="$(find manipulability_metrics_examples)/config/ur5/ur5_joints.yaml" />
