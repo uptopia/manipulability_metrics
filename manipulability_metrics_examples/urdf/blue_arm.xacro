@@ -5,18 +5,18 @@
 <robot
   name="blue_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
   
-  <xacro:include filename="$(find blue_arm_description)/urdf/blue_arm.gazebo.xacro" />
-  <xacro:include filename="$(find blue_arm_description)/urdf/blue_arm.transmission.xacro" />
+  <!-- <xacro:include filename="$(find blue_arm_description)/urdf/blue_arm.gazebo.xacro" />
+  <xacro:include filename="$(find blue_arm_description)/urdf/blue_arm.transmission.xacro" /> -->
 
   <link name="world"/>
-  <joint name="joint_0 " type="fixed">
+  <joint name="fixed " type="fixed">
     <origin
       xyz="0 0 0"
       rpy="0 0 0" />
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
-  
+
   <link
     name="base_link">
     <inertial>
