@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="mobile_dual_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find timda_body)/urdf/timda_body.xacro" />
+  <xacro:include filename="$(find single_arm_description)/urdf/single_arm.xacro" />
+  <xacro:include filename="$(find suction_urdf)/urdf/suction_urdf.xacro" />
+
+  <link name="world"/>
+
+  <!-- TIMDA body -->
+  <joint name="fixed1" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+  
+  <!-- TIMDA right arm with suction tool -->
+  <xacro:single_arm side="r"  parent="slide_right" child="r_tool_link" toolrot="-1.57"> 
+    <origin xyz="0.0 0.1151 0.0" rpy="1.57 3.1415926 3.1415926" />
+  </xacro:single_arm>
+
+  <xacro:suction side="r"  >
+    <origin xyz="0 -0.016 0" rpy="0 0 -1.57" />
+  </xacro:suction>
+
+  <!-- TIMDA left arm with suction tool -->
+  <xacro:single_arm side="l"  parent="slide_left" child="l_tool_link" toolrot="1.57">
+    <origin xyz="0.0 0.1151 0.0" rpy="-1.57 0 0" />
+  </xacro:single_arm>
+
+  <xacro:suction side="l"  >
+    <origin xyz="0 0.016 0" rpy="0 0 1.57" />
+  </xacro:suction>
+
+</robot>
+
+
+
+
+<!-- <?xml version="1.0" encoding="utf-8"?>
+<robot name="mobile_dual_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find single_arm_description)/urdf/single_arm.xacro" />
+  <xacro:include filename="$(find timda_body)/urdf/timda_body.xacro" />
+  <xacro:include filename="$(find suction_urdf)/urdf/suction_urdf.xacro" />
+
+  <link name="world"/>
+
+  <joint name="fixed1" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+  
+  <xacro:single_arm side="r"  parent="slide_right" child="r_tool_link" toolrot="-1.57">
+    <origin xyz="0.0 0.1151 0.0" rpy="1.57 3.1415926 3.1415926" />
+  </xacro:single_arm>
+
+  <xacro:suction side="r"  parent="r_Link_6">
+    <origin xyz="0 -0.016 0" rpy="0 0 -1.57" />
+  </xacro:suction>
+
+  <xacro:single_arm side="l"  parent="slide_left" child="l_tool_link" toolrot="1.57">
+    <origin xyz="0.0 0.1151 0.0" rpy="-1.57 0 0" />
+  </xacro:single_arm>
+
+  <xacro:suction side="l"  parent="l_Link_6">
+    <origin xyz="0 0.016 0" rpy="0 0 1.57" />
+  </xacro:suction>
+
+</robot>
+
+ -->
