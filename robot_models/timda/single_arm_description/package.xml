@@ -4,21 +4,18 @@
   <version>0.0.0</version>
   <description>The single_arm_description package</description>
 
-  <maintainer email="davetcoleman@gmail.com">Dave Coleman</maintainer>
+  <maintainer email="errrr0501done@gmail.com">TaiTing Tsai</maintainer>
+  <license>Apache 2.0</license>
 
   <license>BSD</license>
 
-  <url type="website">http://http://gazebosim.org/w/index.php?title=Tutorials/1.9/Using_A_URDF_In_Gazebo</url>
-  <url type="bugtracker">https://github.com/osrf/gazebo_ros_demos/issues</url>
-  <url type="repository">https://github.com/osrf/gazebo_ros_demos</url>
-
-  <author email="davetcoleman@gmail.com">Dave Coleman</author>
-
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
 
   <run_depend>joint_state_publisher</run_depend>
   <run_depend>robot_state_publisher</run_depend>
   <run_depend>rviz</run_depend>
+  <run_depend>gazebo</run_depend>
 
   <export>
   </export>
