@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: single_arm_description
+    relative_path: urdf/single_arm.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/single_arm.srdf
+  CONFIG:
+    author_name: upup
+    author_email: 809790016@gms.tku.edu.tw
+    generated_timestamp: 1711692231
