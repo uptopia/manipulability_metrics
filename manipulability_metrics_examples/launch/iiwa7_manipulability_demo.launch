@@ -1,7 +1,7 @@
 <launch>
 
   <!-- use github xacro -->
-  <arg name="model" default="$(find iiwa_description)/urdf/iiwa7.urdf.xacro" />
+  <arg name="model" default="$(find iiwa7_description)/urdf/iiwa7.urdf.xacro" />
 
   <arg name="root_link" default="base_link" />
   <arg name="tip_link" default="iiwa_link_7" />
