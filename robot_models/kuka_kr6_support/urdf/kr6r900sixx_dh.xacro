@@ -164,12 +164,12 @@
     </joint>
 
     <!-- ROS base_link to KUKA $ROBROOT coordinate system transform -->
-    <link name="base" />
+    <!-- <link name="base" />
     <joint name="base_link-base" type="fixed">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <parent link="base_link"/>
       <child link="base"/>
-    </joint>
+    </joint> -->
 
     <!-- This frame corresponds to the $TOOL coordinate system in KUKA KRC controllers -->
     <link name="tool0" />
