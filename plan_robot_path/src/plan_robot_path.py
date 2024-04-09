@@ -6,9 +6,11 @@ from six.moves import input
 import sys
 import copy
 import rospy
+import tf
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
+import numpy as np
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -66,6 +68,8 @@ class PlanRobotPath(object):
 
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.init_node("plan_robot_path", anonymous=True)
+        
+        self.listener = tf.TransformListener()
 
         robot = moveit_commander.RobotCommander()
         scene = moveit_commander.PlanningSceneInterface()
@@ -104,8 +108,110 @@ class PlanRobotPath(object):
         rospy.spin()
 
     def plan_robot_path_cb(self, pose_msg):
+        print('=================')
+        #quaternion rotation
+        # https://wiki.ros.org/tf2/Tutorials/Quaternions
+        # https://blog.csdn.net/wjrzm2001/article/details/129160906
 
-        print('move to...')
+        #==================#
+        # base_H_endeffect
+        # base_H_cam
+        #==================#
+        #https://stackoverflow.com/questions/54384021/transforming-pose-with-tf-listener-is-not-working-in-rviz
+        # rosrun rqt_tf_tree rqt_tf_tree
+        # rosrun tf view_frames
+        try:
+            (trans, quaternion) = self.listener.lookupTransform('/panda_link0', '/panda_link7', rospy.Time(0))
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            print("not working")
+            pass
+
+        print('trans:\n', trans)
+        print('quaternion:\n', quaternion, type(quaternion))
+
+        base_H_cam = tf.transformations.quaternion_matrix(quaternion)#tf.fromTranslationRotation(trans, quaternion)
+        base_H_cam[0][3] = trans[0]
+        base_H_cam[1][3] = trans[1]
+        base_H_cam[2][3] = trans[2]
+        print("base_H_cam:\n", base_H_cam)
+
+        #https://robotics.stackexchange.com/questions/99136/transformation-matrices-to-geometry-msgs-pose
+        # cur_matrix = matrix.reshape(3,4)
+        # cur_matrix_homo = np.vstack((cur_matrix, np.array([0, 0, 0, 1]))) # to homogenous coordinates
+
+        # q = tf.transformations.quaternion_from_matrix(cur_matrix_homo)
+
+        # p = Pose()
+        # p.position.x = matrix[0][3]
+        # p.position.y = matrix[1][3]
+        # p.position.z = matrix[2][3]
+        # p.orientation.x = q[0]
+        # p.orientation.y = q[1]
+        # p.orientation.z = q[2]
+        # p.orientation.w = q[3]
+
+        #==================#
+        #   cam_H_DLOobj
+        #==================#
+        print("cam_H_DLOobj:\n")
+        print(pose_msg.position.x, pose_msg.position.y, pose_msg.position.z)
+        print(pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w)
+        print(type(pose_msg.orientation))
+    
+        cam_H_DLOobj = tf.transformations.quaternion_matrix([pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w])#tf.transformations.fromTranslationRotation(pose_msg.position, pose_msg.orientation)
+        cam_H_DLOobj[0][3] = pose_msg.position.x
+        cam_H_DLOobj[1][3] = pose_msg.position.y
+        cam_H_DLOobj[2][3] = pose_msg.position.z
+        print("cam_H_DLOobj:\n", cam_H_DLOobj)
+
+        #==================#
+        #   base_H_DLOobj
+        #==================#
+        # https://gist.github.com/lucascoelhof/b40c3f56080d789bf0623843af10f752
+        # https://wiki.ros.org/tf/Tutorials/Adding%20a%20frame%20%28Python%29
+        # https://wiki.ros.org/tf/TfUsingPython
+
+        base_H_DLOobj = base_H_cam*cam_H_DLOobj
+        print("base_H_DLOobj:\n", base_H_DLOobj)
+
+        dlo_x = base_H_DLOobj[0][3]
+        dlo_y = base_H_DLOobj[1][3]
+        dlo_z = base_H_DLOobj[2][3]
+        dlo_rot_quat = tf.transformations.quaternion_from_matrix(base_H_DLOobj)
+        print('dlo_rot_quat:', dlo_rot_quat)
+
+        dlo_rot_quat_norm = dlo_rot_quat/np.sqrt(np.dot(dlo_rot_quat,dlo_rot_quat))
+        print('dlo_rot_quat normalized:', dlo_rot_quat_norm)
+        dlo_rot_x = dlo_rot_quat_norm[0]
+        dlo_rot_y = dlo_rot_quat_norm[1]
+        dlo_rot_z = dlo_rot_quat_norm[2]
+        dlo_rot_w = dlo_rot_quat_norm[3]
+
+        # add a dlo_obj frame
+        # https://blog.csdn.net/Will_Ye/article/details/123035136
+        # invalid quaternion in the transform (0.481047 0.508212 0.241462 0.237747)
+        br = tf.TransformBroadcaster()
+        br.sendTransform((dlo_x, dlo_y, dlo_z), 
+                         (dlo_rot_x, dlo_rot_y, dlo_rot_z, dlo_rot_w),
+                                     rospy.Time.now(),
+                                     'dlo_obj',
+                                     'panda_link8')
+        
+        tmp_trans, tmp_rot = self.listener.lookupTransform("/dlo_obj", "/panda_link8", rospy.Time(0))
+        print('tmp_trans, tmp_rot:\n', tmp_trans, tmp_rot)
+
+
+        #==================#
+        #  Jacobian beform 
+        #  move to target
+        #==================#
+        joint_values = self.move_group.get_current_joint_values()
+        print("robot current joints: \n", joint_values)
+        print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_values))
+        print("robot current pose: \n", self.move_group.get_current_pose().pose)
+
+
+        print('move to grasp pose...\n')
         print(pose_msg.position.x, pose_msg.position.y, pose_msg.position.z)
         print(pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w)
         self.move_group.set_pose_target(pose_msg)
@@ -125,6 +231,16 @@ class PlanRobotPath(object):
         # Note that since this section of code will not be included in the tutorials
         # we use the class variable rather than the copied state variable
         current_pose = self.move_group.get_current_pose().pose
+
+        #==================#
+        #  Jacobian beform 
+        #  move to target
+        #==================#
+        joint_values_new = self.move_group.get_current_joint_values()
+        print("robot current joints: \n", joint_values_new)
+        print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_values_new))
+        print("robot current pose: \n", self.move_group.get_current_pose().pose)
+
         return all_close(pose_msg, current_pose, 0.01)
 
 
