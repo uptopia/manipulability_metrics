@@ -1,1 +1,3 @@
 # install python dep
+
+open3d>=0.8

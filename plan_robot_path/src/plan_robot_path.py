@@ -11,6 +11,9 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 import numpy as np
+from sensor_msgs.msg import PointCloud2, PointField
+from sensor_msgs import point_cloud2
+import open3d as o3d
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -22,12 +25,30 @@ except:  # For Python 2 compatibility
     def dist(p, q):
         return sqrt(sum((p_i - q_i) ** 2.0 for p_i, q_i in zip(p, q)))
 
-
+import std_msgs.msg
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
-## END_SUB_TUTORIAL
+from ctypes import * # convert float to uint32
 
+# The data structure of each point in ros PointCloud2: 16 bits = x + y + z + rgb
+FIELDS_XYZ = [
+    PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+    PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+    PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+]
+FIELDS_XYZRGB = FIELDS_XYZ + \
+    [PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1)]
+## END_SUB_TUTORIAL
+# Bit operations
+BIT_MOVE_16 = 2**16
+BIT_MOVE_8 = 2**8
+convert_rgbUint32_to_tuple = lambda rgb_uint32: (
+    (rgb_uint32 & 0x00ff0000)>>16, (rgb_uint32 & 0x0000ff00)>>8, (rgb_uint32 & 0x000000ff)
+)
+convert_rgbFloat_to_tuple = lambda rgb_float: convert_rgbUint32_to_tuple(
+    int(cast(pointer(c_float(rgb_float)), POINTER(c_uint32)).contents.value)
+)
 
 def all_close(goal, actual, tolerance):
     """
@@ -77,7 +98,7 @@ class PlanRobotPath(object):
         group_name = "panda_arm"
         move_group = moveit_commander.MoveGroupCommander(group_name)
 
-
+        rospy.Subscriber("/dlo_cloud", PointCloud2, self.dlo_cloud_cb)
         rospy.Subscriber("/dlo_grasp", geometry_msgs.msg.Pose, self.plan_robot_path_cb)
 
         display_trajectory_publisher = rospy.Publisher(
@@ -85,6 +106,7 @@ class PlanRobotPath(object):
             moveit_msgs.msg.DisplayTrajectory,
             queue_size=20,
         )
+        self.dlo_cloud_inRobot_pub = rospy.Publisher("/dlo_cloud_inRobot", PointCloud2, queue_size=2)
 
         planning_frame = move_group.get_planning_frame()
         eef_link = move_group.get_end_effector_link()
@@ -105,7 +127,96 @@ class PlanRobotPath(object):
         self.eef_link = eef_link
         self.group_names = group_names
 
+        self.base_H_DLOobj = np.identity(4)
+
         rospy.spin()
+
+    def convertCloudFromRosToOpen3d(self, ros_cloud):
+        #https://github.com/felixchenfy/open3d_ros_pointcloud_conversion/blob/master/lib_cloud_conversion_between_Open3D_and_ROS.py
+        # Get cloud data from ros_cloud
+        field_names=[field.name for field in ros_cloud.fields]
+        cloud_data = list(point_cloud2.read_points(ros_cloud, skip_nans=True, field_names = field_names))
+
+        # Check empty
+        open3d_cloud = o3d.geometry.PointCloud()
+        if len(cloud_data)==0:
+            print("Converting an empty cloud")
+            return None
+
+        # Set open3d_cloud
+        if "rgb" in field_names:
+            IDX_RGB_IN_FIELD=3 # x, y, z, rgb
+            
+            # Get xyz
+            xyz = [(x,y,z) for x,y,z,rgb in cloud_data ] # (why cannot put this line below rgb?)
+
+            # Get rgb
+            # Check whether int or float
+            if type(cloud_data[0][IDX_RGB_IN_FIELD])==float: # if float (from pcl::toROSMsg)
+                rgb = [convert_rgbFloat_to_tuple(rgb) for x,y,z,rgb in cloud_data ]
+            else:
+                rgb = [convert_rgbUint32_to_tuple(rgb) for x,y,z,rgb in cloud_data ]
+
+            # combine
+            open3d_cloud.points = o3d.utility.Vector3dVector(np.array(xyz))
+            open3d_cloud.colors = o3d.utility.Vector3dVector(np.array(rgb)/255.0)
+        else:
+            xyz = [(x,y,z) for x,y,z in cloud_data ] # get xyz
+            open3d_cloud.points = o3d.utility.Vector3dVector(np.array(xyz))
+
+        # return
+        return open3d_cloud
+    
+    # Convert the datatype of point cloud from Open3D to ROS PointCloud2 (XYZRGB only)
+    def convertCloudFromOpen3dToRos(self, open3d_cloud, frame_id="odom"):
+        # Set "header"
+        header = std_msgs.msg.Header()
+        header.stamp = rospy.Time.now()
+        header.frame_id = frame_id
+
+        # Set "fields" and "cloud_data"
+        points=np.asarray(open3d_cloud.points)
+
+        #testing
+        # print("cloud field: ", FIELDS_XYZ)
+        fields=FIELDS_XYZ
+        cloud_data=points
+        # print("cloud_data:\n", cloud_data)
+
+        ## original
+        # if not open3d_cloud.colors: # XYZ only
+        #     print("cloud field: ", FIELDS_XYZ)
+        #     fields=FIELDS_XYZ
+        #     cloud_data=points
+        # else: # XYZ + RGB
+        #     print("cloud field: ", FIELDS_XYZRGB)
+        #     fields=FIELDS_XYZRGB
+        #     # -- Change rgb color from "three float" to "one 24-byte int"
+        #     # 0x00FFFFFF is white, 0x00000000 is black.
+        #     colors = np.floor(np.asarray(open3d_cloud.colors)*255)                        # nx3 matrix (3 float)
+        #     colors = colors[:,0] * BIT_MOVE_16 +colors[:,1] * BIT_MOVE_8 + colors[:,2]    # 1 24-byte int
+        #     cloud_data=np.c_[points, colors] #concatenate by columns
+        #     print("cloud_data:", cloud_data)
+
+        # create ros_cloud
+        return point_cloud2.create_cloud(header, fields, cloud_data)
+
+    def dlo_cloud_cb(self, dlo_cloud_msg):
+        # assert isinstance(dlo_cloud_msg, PointCloud2)
+        # print("self.base_H_DLOobj == np.identity(4):", np.array_equal(self.base_H_DLOobj, np.identity(4)))
+        if np.array_equal(self.base_H_DLOobj, np.identity(4)):
+            print("base_H_DLOobj is identity matrix")
+        else:
+            print(" dlo_cloud to dlo_cloud_inRobot")
+            # print("base_H_DLOobj:\n", self.base_H_DLOobj)
+            # dlo_cloud_gen = point_cloud2.read_points_list(dlo_cloud_msg, skip_nans=False)
+            o3d_dlo_cloud = self.convertCloudFromRosToOpen3d(dlo_cloud_msg)
+            o3d_dlo_cloud_inRobot = o3d_dlo_cloud.transform(np.identity(4))#self.base_H_DLOobj)
+            # print(o3d_dlo_cloud.colors)
+            # print(np.asarray(o3d_dlo_cloud_inRobot.points))
+            ros_dlo_cloud_inRobot = self.convertCloudFromOpen3dToRos(o3d_dlo_cloud_inRobot, frame_id='panda_link0')
+            # print(type(dlo_cloud_msg),type(o3d_dlo_cloud),type(self.base_H_DLOobj),type(o3d_dlo_cloud_inRobot), type(ros_dlo_cloud_inRobot))
+            self.dlo_cloud_inRobot_pub.publish(ros_dlo_cloud_inRobot)
 
     def plan_robot_path_cb(self, pose_msg):
         print('=================')
@@ -126,14 +237,14 @@ class PlanRobotPath(object):
             print("not working")
             pass
 
-        print('trans:\n', trans)
-        print('quaternion:\n', quaternion, type(quaternion))
+        # print('trans:\n', trans)
+        # print('quaternion:\n', quaternion, type(quaternion))
 
         base_H_cam = tf.transformations.quaternion_matrix(quaternion)#tf.fromTranslationRotation(trans, quaternion)
         base_H_cam[0][3] = trans[0]
         base_H_cam[1][3] = trans[1]
         base_H_cam[2][3] = trans[2]
-        print("base_H_cam:\n", base_H_cam)
+        # print("base_H_cam:\n", base_H_cam)
 
         #https://robotics.stackexchange.com/questions/99136/transformation-matrices-to-geometry-msgs-pose
         # cur_matrix = matrix.reshape(3,4)
@@ -153,7 +264,7 @@ class PlanRobotPath(object):
         #==================#
         #   cam_H_DLOobj
         #==================#
-        print("cam_H_DLOobj:\n")
+        # print("cam_H_DLOobj:\n")
         print(pose_msg.position.x, pose_msg.position.y, pose_msg.position.z)
         print(pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w)
         print(type(pose_msg.orientation))
@@ -162,7 +273,7 @@ class PlanRobotPath(object):
         cam_H_DLOobj[0][3] = pose_msg.position.x
         cam_H_DLOobj[1][3] = pose_msg.position.y
         cam_H_DLOobj[2][3] = pose_msg.position.z
-        print("cam_H_DLOobj:\n", cam_H_DLOobj)
+        # print("cam_H_DLOobj:\n", cam_H_DLOobj)
 
         #==================#
         #   base_H_DLOobj
@@ -172,16 +283,17 @@ class PlanRobotPath(object):
         # https://wiki.ros.org/tf/TfUsingPython
 
         base_H_DLOobj = base_H_cam*cam_H_DLOobj
-        print("base_H_DLOobj:\n", base_H_DLOobj)
+        # print("base_H_DLOobj:\n", base_H_DLOobj)
+        self.base_H_DLOobj = base_H_DLOobj
 
         dlo_x = base_H_DLOobj[0][3]
         dlo_y = base_H_DLOobj[1][3]
         dlo_z = base_H_DLOobj[2][3]
         dlo_rot_quat = tf.transformations.quaternion_from_matrix(base_H_DLOobj)
-        print('dlo_rot_quat:', dlo_rot_quat)
+        # print('dlo_rot_quat:', dlo_rot_quat)
 
         dlo_rot_quat_norm = dlo_rot_quat/np.sqrt(np.dot(dlo_rot_quat,dlo_rot_quat))
-        print('dlo_rot_quat normalized:', dlo_rot_quat_norm)
+        # print('dlo_rot_quat normalized:', dlo_rot_quat_norm)
         dlo_rot_x = dlo_rot_quat_norm[0]
         dlo_rot_y = dlo_rot_quat_norm[1]
         dlo_rot_z = dlo_rot_quat_norm[2]
@@ -198,7 +310,7 @@ class PlanRobotPath(object):
                                      'panda_link8')
         
         tmp_trans, tmp_rot = self.listener.lookupTransform("/dlo_obj", "/panda_link8", rospy.Time(0))
-        print('tmp_trans, tmp_rot:\n', tmp_trans, tmp_rot)
+        # print('tmp_trans, tmp_rot:\n', tmp_trans, tmp_rot)
 
 
         #==================#
@@ -206,19 +318,37 @@ class PlanRobotPath(object):
         #  move to target
         #==================#
         joint_values = self.move_group.get_current_joint_values()
-        print("robot current joints: \n", joint_values)
-        print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_values))
-        print("robot current pose: \n", self.move_group.get_current_pose().pose)
-
+        # print("robot current joints: \n", joint_values)
+        # print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_values))
+        # print("robot current pose: \n", self.move_group.get_current_pose().pose)
 
         print('move to grasp pose...\n')
         print(pose_msg.position.x, pose_msg.position.y, pose_msg.position.z)
         print(pose_msg.orientation.x, pose_msg.orientation.y, pose_msg.orientation.z, pose_msg.orientation.w)
         self.move_group.set_pose_target(pose_msg)
+        plan = self.move_group.plan()
+        print("plan: ", type(plan))
+        print("trajectory points:", type(plan[0]), type(plan[1]), type(plan[2]))
 
-        ## Now, we call the planner to compute the plan and execute it.
-        # `go()` returns a boolean indicating whether the planning and execution was successful.
-        success = self.move_group.go(wait=True)
+        if plan[1].joint_trajectory.points:  # True if trajectory contains points
+            print(len(plan[1].joint_trajectory.points))
+            print('plan points:\n', type(plan[1].joint_trajectory.points[0].positions),plan[1].joint_trajectory.points[0].positions)
+            move_success = self.move_group.execute(plan[1])
+            print('move_success:', move_success)
+            for m in range(len(plan[1].joint_trajectory.points)):
+                joint_angles = list(plan[1].joint_trajectory.points[m].positions)
+                # print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_angles))
+                # https://github.com/robotlearn/pyrobolearn/blob/9cd7c060723fda7d2779fa255ac998c2c82b8436/pyrobolearn/robots/robot.py#L3302
+                jacob = self.move_group.get_jacobian_matrix(joint_angles)
+                manip = np.linalg.det(jacob.dot(jacob.T))**0.5
+                print('manip:', m, manip)
+
+        else:
+            rospy.logerr("Trajectory is empty. Planning was unsuccessful.")
+
+        # ## Now, we call the planner to compute the plan and execute it.
+        # # `go()` returns a boolean indicating whether the planning and execution was successful.
+        # success = self.move_group.go(wait=True)
         # Calling `stop()` ensures that there is no residual movement
         self.move_group.stop()
         # It is always good to clear your targets after planning with poses.
@@ -237,9 +367,10 @@ class PlanRobotPath(object):
         #  move to target
         #==================#
         joint_values_new = self.move_group.get_current_joint_values()
-        print("robot current joints: \n", joint_values_new)
-        print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_values_new))
-        print("robot current pose: \n", self.move_group.get_current_pose().pose)
+        print('type(joint_values_new):', type(joint_values_new))
+        # print("robot current joints: \n", joint_values_new)
+        # print('robot jacobian: \n', self.move_group.get_jacobian_matrix(joint_values_new))
+        # print("robot current pose: \n", self.move_group.get_current_pose().pose)
 
         return all_close(pose_msg, current_pose, 0.01)
 

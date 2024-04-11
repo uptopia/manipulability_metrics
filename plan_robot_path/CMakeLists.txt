@@ -26,6 +26,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
   tf2_ros
   geometry_msgs
+  sensor_msgs
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
