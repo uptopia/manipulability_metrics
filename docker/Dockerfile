@@ -66,6 +66,7 @@ RUN apt update \
         python3-dev \
         python3-apt \
         python3-setuptools \
+        python3-tk \ 
         # * tools
         cmake \
         lsb-release \
@@ -99,6 +100,7 @@ RUN apt update \
         ros-$ROS_DISTRO-catkin \
         ros-$ROS_DISTRO-ddynamic-reconfigure \
         ros-$ROS_DISTRO-franka-description \
+        ros-$ROS-tf2-sensor-msgs \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 

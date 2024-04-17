@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: blue_arm_description
+    relative_path: urdf/blue_arm_cam.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/blue_arm.srdf
+  CONFIG:
+    author_name: upup
+    author_email: 809790016@gms.tku.edu.tw
+    generated_timestamp: 1713263510
