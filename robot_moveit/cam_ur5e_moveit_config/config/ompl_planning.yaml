@@ -193,5 +193,5 @@ ur5e:
     - AITstar
     - ABITstar
     - BITstar
-  projection_evaluator: joints(shoulder_lift_joint,elbow_joint)
+  projection_evaluator: joints(shoulder_pan_joint,shoulder_lift_joint)
   longest_valid_segment_fraction: 0.005

@@ -10,11 +10,11 @@
     <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
     <!-- UR5e config & MoveIt-->
-    <!-- <include file="$(find cam_ur5e_moveit_config)/launch/demo.launch" />
+    <include file="$(find cam_ur5e_moveit_config)/launch/demo.launch" />
 
     <arg name="group_name"   default="ur5e"/>
     <arg name="base_frame"   default="base_link"/>
-    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+    <arg name="cam_frame"    default="camera_color_optical_frame"/>
 
     <!-- KR6 R900 sixx config & MoveIt-->
     <!-- <include file="$(find cam_kr6r900_moveit_config)/launch/demo.launch" />
@@ -52,11 +52,11 @@
     <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
     <!-- TIMDA dual7 config & MoveIt-->
-    <include file="$(find cam_timda_dual7_moveit_config)/launch/demo.launch" />
+    <!-- <include file="$(find cam_timda_dual7_moveit_config)/launch/demo.launch" />
 
     <arg name="group_name"   default="r_timda_single7"/>
     <arg name="base_frame"   default="base_link"/>
-    <arg name="cam_frame"    default="camera_color_optical_frame"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
     <!-- TIMDA dual8 config & MoveIt-->
     <!-- <include file="$(find cam_timda_dual8_moveit_config)/launch/demo.launch" />

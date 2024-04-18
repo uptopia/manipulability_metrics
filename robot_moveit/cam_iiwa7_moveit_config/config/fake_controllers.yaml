@@ -11,4 +11,4 @@ controller_list:
       - iiwa_joint_7
 initial:  # Define initial robot poses per group
   - group: iiwa7
-    pose: home
+    pose: take_pic

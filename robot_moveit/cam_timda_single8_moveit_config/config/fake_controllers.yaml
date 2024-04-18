@@ -10,4 +10,4 @@ controller_list:
       - r_joint_6
 initial:  # Define initial robot poses per group
   - group: timda_single8
-    pose: home
+    pose: take_pic

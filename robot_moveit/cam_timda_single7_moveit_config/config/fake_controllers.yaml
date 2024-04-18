@@ -10,4 +10,4 @@ controller_list:
       - joint_6
 initial:  # Define initial robot poses per group
   - group: single_arm
-    pose: home
+    pose: take_pic

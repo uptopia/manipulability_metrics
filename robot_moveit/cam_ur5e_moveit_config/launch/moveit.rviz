@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /MotionPlanning1
         - /PointCloud21
+        - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 230
@@ -339,9 +340,9 @@ Visualization Manager:
         camera_link:
           Value: false
         dlo_graspInBase_frame:
-          Value: false
-        dlo_graspInCam_frame:
           Value: true
+        dlo_graspInCam_frame:
+          Value: false
         forearm_link:
           Value: false
         shoulder_link:
@@ -422,9 +423,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.11000032722949982
+      Pitch: -0.12999975681304932
       Target Frame: world
-      Yaw: 3.8499112129211426
+      Yaw: 4.264923572540283
     Saved: ~
 Window Geometry:
   Displays:
@@ -442,5 +443,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1291
-  X: 454
-  Y: 27
+  X: 141
+  Y: 37

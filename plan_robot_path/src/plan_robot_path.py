@@ -111,28 +111,49 @@ class PlanRobotPath(object):
 
         self.dlo_graspInBase_br = tf.TransformBroadcaster()
 
+
+        ###############
+        # fixed take pic pose
+        # base_H_cam
+        ###############
+        not_arrived = True
+        self.base_H_cam=[]
+        while not_arrived:
+            self.move_group.set_named_target("take_pic")
+            success = self.move_group.go()
+
+            if success:
+                print("success")
+                self.move_group.stop()
+                self.base_H_cam = self.tf_buffer.lookup_transform(self.base_frame, self.cam_frame, rospy.Time(), rospy.Duration(0.1))
+                print('base_H_cam:', self.base_H_cam)
+                break
+            else:
+                print("failed")
+
         rospy.spin()
 
     def callback(self, dlo_cloudInCam_msg, dlo_graspInCam_msg):
+        print('base_H_cam:', self.base_H_cam)
 
-        ###############
-        # base_H_cam
-        ###############
-        base_H_cam = self.tf_buffer.lookup_transform(self.base_frame, self.cam_frame, rospy.Time(), rospy.Duration(0.1))
-        print('base_H_cam:', base_H_cam)
+        # ###############
+        # # base_H_cam
+        # ###############
+        # base_H_cam = self.tf_buffer.lookup_transform(self.base_frame, self.cam_frame, rospy.Time(), rospy.Duration(0.1))
+        # print('base_H_cam:', base_H_cam)
 
         ###############
         # cloud_inCam -->
         # cloud_inBase
         ###############
-        dlo_cloudInBase_msg = tf2_sensor_msgs.do_transform_cloud(dlo_cloudInCam_msg, base_H_cam)
+        dlo_cloudInBase_msg = tf2_sensor_msgs.do_transform_cloud(dlo_cloudInCam_msg, self.base_H_cam)
         self.dlo_cloudInBase_pub.publish(dlo_cloudInBase_msg)
 
         ###############
         # grasp_inCam -->
         # grasp_inBase
         ###############
-        dlo_graspInBase_msg = tf2_geometry_msgs.do_transform_pose(dlo_graspInCam_msg, base_H_cam)
+        dlo_graspInBase_msg = tf2_geometry_msgs.do_transform_pose(dlo_graspInCam_msg, self.base_H_cam)
         self.dlo_graspInBase_br.sendTransform((dlo_graspInBase_msg.pose.position.x, dlo_graspInBase_msg.pose.position.y, dlo_graspInBase_msg.pose.position.z),
                                             (dlo_graspInBase_msg.pose.orientation.x, dlo_graspInBase_msg.pose.orientation.y, dlo_graspInBase_msg.pose.orientation.z, dlo_graspInBase_msg.pose.orientation.w),
                                             dlo_graspInCam_msg.header.stamp,

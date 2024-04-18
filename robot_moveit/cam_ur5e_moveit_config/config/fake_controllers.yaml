@@ -2,6 +2,7 @@ controller_list:
   - name: fake_ur5e_controller
     type: $(arg fake_execution_type)
     joints:
+      - shoulder_pan_joint
       - shoulder_lift_joint
       - elbow_joint
       - wrist_1_joint
@@ -9,4 +10,4 @@ controller_list:
       - wrist_3_joint
 initial:  # Define initial robot poses per group
   - group: ur5e
-    pose: home
+    pose: take_pic
