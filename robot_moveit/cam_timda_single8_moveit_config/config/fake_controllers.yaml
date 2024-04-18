@@ -1,0 +1,13 @@
+controller_list:
+  - name: fake_timda_single8_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - r_joint_1
+      - r_joint_2
+      - r_joint_3
+      - r_joint_4
+      - r_joint_5
+      - r_joint_6
+initial:  # Define initial robot poses per group
+  - group: timda_single8
+    pose: home

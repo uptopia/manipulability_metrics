@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<robot name="kuka_kr6r900sixx" xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <!--Import KR6 R900 sixx macro -->
+  <xacro:include filename="$(find kuka_kr6_support)/urdf/kr6r900sixx_macro.xacro" />
+  <!--KR6 R900 sixx-->
+  <xacro:kuka_kr6r900sixx prefix=""/>
+
+  <!--camera-->
+  <xacro:arg name="use_nominal_extrinsics" default="true"/>
+  <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro" />
+
+  <xacro:sensor_d405 parent="flange" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:sensor_d405>
+</robot>

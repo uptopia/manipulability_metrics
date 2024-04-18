@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: iiwa7_description
+    relative_path: urdf/iiwa7_cam.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/iiwa7.srdf
+  CONFIG:
+    author_name: upup
+    author_email: 809790016@gms.tku.edu.tw
+    generated_timestamp: 1713409720
