@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<launch>
+
+    <!-- UR5 config & MoveIt-->
+    <!-- <include file="$(find cam_ur5_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="ur5"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- UR5e config & MoveIt-->
+    <!-- <include file="$(find cam_ur5e_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="ur5e"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- KR6 R900 sixx config & MoveIt-->
+    <!-- <include file="$(find cam_kr6r900_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="kr6r900sixx"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+    
+    <!-- Blue_arm config & MoveIt-->
+    <!-- <include file="$(find cam_blue_arm_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="blue_arm"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- iiwa7 config & MoveIt-->
+    <!-- <include file="$(find cam_iiwa7_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="iiwa7"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- TIMDA single7 config & MoveIt-->
+    <!-- <include file="$(find cam_timda_single7_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="single_arm"/>
+    <arg name="base_frame"   default="base"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- TIMDA single8 config & MoveIt-->
+    <!-- <include file="$(find cam_timda_single7_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="single_arm"/>
+    <arg name="base_frame"   default="base"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- TIMDA dual7 config & MoveIt-->
+    <include file="$(find cam_timda_dual7_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="r_timda_single7"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/>
+
+    <!-- TIMDA dual8 config & MoveIt-->
+    <!-- <include file="$(find cam_timda_dual8_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="r_timda_single8"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
+
+    <!-- plan_robot_path -->
+    <node name="plan_robot_path" pkg="plan_robot_path" type="plan_robot_path.py" output="screen" respawn="true">
+        <param name="group_name" value="$(arg group_name)" />
+        <param name="base_frame" value="$(arg base_frame)" />
+        <param name="cam_frame" value="$(arg cam_frame)" />
+    </node>
+
+</launch>
+<!-- https://answers.ros.org/question/384669/use-arguments-from-roslaunch-in-python/ -->

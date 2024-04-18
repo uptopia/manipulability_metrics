@@ -92,14 +92,14 @@ class PlanRobotPath(object):
 
         self.robot = moveit_commander.RobotCommander()
 
-        self.group_name = "blue_arm" #"panda_arm"
+        self.group_name = rospy.get_param('/plan_robot_path/group_name')#"blue_arm" #"panda_arm"
+        self.base_frame = rospy.get_param('/plan_robot_path/base_frame')#"base_link"
+        self.cam_frame = rospy.get_param('/plan_robot_path/cam_frame')#"camera_color_optical_frame"
+        print(self.group_name, self.base_frame, self.cam_frame)
         self.move_group = moveit_commander.MoveGroupCommander(self.group_name)
 
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
-
-        self.base_frame = "base_link"
-        self.cam_frame = "camera_color_optical_frame"
 
         dlo_cloudInCam_sub = message_filters.Subscriber('/dlo_cloudInCam', PointCloud2)
         dlo_graspInCam_sub = message_filters.Subscriber('/dlo_graspInCam', PoseStamped)
@@ -137,7 +137,7 @@ class PlanRobotPath(object):
                                             (dlo_graspInBase_msg.pose.orientation.x, dlo_graspInBase_msg.pose.orientation.y, dlo_graspInBase_msg.pose.orientation.z, dlo_graspInBase_msg.pose.orientation.w),
                                             dlo_graspInCam_msg.header.stamp,
                                             "dlo_graspInBase_frame", 
-                                            "base_link")
+                                            self.base_frame)
         
         ###############
         # plan robot
