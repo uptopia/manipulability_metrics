@@ -1,3 +1,27 @@
+```
+mkdir manip_metrics_ws && cd manip_metrics_ws
+git clone -b noetic-devel https://github.com/uptopia/manipulability_metrics.git src
+
+# Build and Run Docker Container
+cd manip_metrics_ws/src/docker
+./build.sh
+./run.sh
+
+<inside Docker container>
+cd ~/work/manip_metrics_ws
+catkin_make
+
+<terminal 1>
+. devel/setup.bash
+roslaunch panda_moveit_config demo.launch
+
+<terminal 2>
+. devel/setup.bash
+rosrun plan_robot_path plan_robot_path.py
+```
+
+
+
 [![GitHub Workflow Status](https://github.com/tecnalia-medical-robotics/manipulability_metrics/workflows/CI/badge.svg?branch=melodic-devel)](https://github.com/tecnalia-medical-robotics/manipulability_metrics/actions)
 [![license - apache 2.0](https://img.shields.io/:license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
