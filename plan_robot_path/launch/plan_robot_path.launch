@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <launch>
+    <!-- Panda config & MoveIt-->
+    <!-- <include file="$(find panda_moveit_config)/launch/demo.launch" />
+
+    <arg name="group_name"   default="panda_arm"/>
+    <arg name="base_frame"   default="base_link"/>
+    <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
     <!-- UR5 config & MoveIt-->
     <!-- <include file="$(find cam_ur5_moveit_config)/launch/demo.launch" />

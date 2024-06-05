@@ -16,16 +16,17 @@
     <group_state name="home" group="ur5">
         <joint name="elbow_joint" value="0"/>
         <joint name="shoulder_lift_joint" value="0"/>
+        <joint name="shoulder_pan_joint" value="0"/>
         <joint name="wrist_1_joint" value="0"/>
         <joint name="wrist_2_joint" value="0"/>
         <joint name="wrist_3_joint" value="0"/>
     </group_state>
     <group_state name="take_pic" group="ur5">
-        <joint name="elbow_joint" value="2.3561"/>
-        <joint name="shoulder_lift_joint" value="-1.3823"/>
+        <joint name="elbow_joint" value="1.6964"/>
+        <joint name="shoulder_lift_joint" value="-0.9425"/>
         <joint name="shoulder_pan_joint" value="0"/>
-        <joint name="wrist_1_joint" value="-2.4504"/>
-        <joint name="wrist_2_joint" value="-1.6964"/>
+        <joint name="wrist_1_joint" value="-1.8849"/>
+        <joint name="wrist_2_joint" value="-1.8221"/>
         <joint name="wrist_3_joint" value="0"/>
     </group_state>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->

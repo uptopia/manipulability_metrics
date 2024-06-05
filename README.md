@@ -13,11 +13,17 @@ catkin_make
 
 <terminal 1>
 . devel/setup.bash
-roslaunch panda_moveit_config demo.launch
+roslaunch panda_moveit_config demo.launch 或
+roslaunch cam_ur5_moveit_config demo.launch
 
 <terminal 2>
 . devel/setup.bash
 rosrun plan_robot_path plan_robot_path.py
+
+or
+<terminal 1> 進入plan_robot_path.launch選擇想要執行的robot config
+. devel/setup.bash
+roslaunch plan_robot_path plan_robot_path.launch
 ```
 
 
