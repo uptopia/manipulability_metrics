@@ -67,6 +67,7 @@ RUN apt update \
         python3-apt \
         python3-setuptools \
         python3-tk \ 
+        python3-rosdep \
         # * tools
         cmake \
         lsb-release \

@@ -25,7 +25,25 @@ or
 . devel/setup.bash
 roslaunch plan_robot_path plan_robot_path.launch
 ```
+```
+mkdir ur_robot
+cd ur_robot/
+git clone -b noetic-devel https://github.com/ros-industrial/universal_robot.git src
 
+sudo apt update
+sudo apt install python3-rosdep
+sudo rosdep update
+rosdep install --rosdistro $ROS_DISTRO --ignore-src --from-paths src
+
+catkin_make
+. devel/setup.bash
+roslaunch ur_gazebo ur5_bringup.launch
+roslaunch ur5_moveit_config moveit_planning_execution.launch sim:=true
+roslaunch cam_ur5_moveit_config moveit_rviz.launch sim:=true
+
+roslaunch manipulability_metrics_examples ur5_manipulability_demo.launch
+
+```
 
 
 [![GitHub Workflow Status](https://github.com/tecnalia-medical-robotics/manipulability_metrics/workflows/CI/badge.svg?branch=melodic-devel)](https://github.com/tecnalia-medical-robotics/manipulability_metrics/actions)

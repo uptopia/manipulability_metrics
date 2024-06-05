@@ -1,6 +1,7 @@
 <launch>
 
-  <arg name="model" default="$(find ur_description)/urdf/ur.urdf.xacro name:=ur5" />
+  <!-- <arg name="model" default="$(find ur_description)/urdf/ur.urdf.xacro name:=ur5" /> -->
+  <arg name="model" default="$(find ur_description)/urdf/ur5.xacro" />
 
   <arg name="root_link" default="base_link" />
   <arg name="tip_link" default="wrist_3_link" />
