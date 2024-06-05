@@ -2,7 +2,7 @@
 
 # Get dependent parameters
 source "$(dirname "$(readlink -f "${0}")")/get_param.sh"
-IMAGE="manip_metric"
+#IMAGE="manip_metric"
 
 # docker run --privileged \
 docker run --rm \
@@ -19,6 +19,7 @@ docker run --rm \
     -v /etc/localtime:/etc/localtime:ro \
     -v /dev:/dev \
     -v ${WS_PATH}/..:/home/${user}/work \
-    -it --name manip_metric "${DOCKER_HUB_USER}"/"${IMAGE}"
+    -it --name "${CONTAINER}" "${DOCKER_HUB_USER}"/"${IMAGE}"
+    #-it --name manip_metric "${DOCKER_HUB_USER}"/"${IMAGE}"
     #-it --name "${CONTAINER}" "${DOCKER_HUB_USER}"/"${IMAGE}"
 

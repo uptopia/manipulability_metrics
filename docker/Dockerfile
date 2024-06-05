@@ -100,7 +100,7 @@ RUN apt update \
         ros-$ROS_DISTRO-catkin \
         ros-$ROS_DISTRO-ddynamic-reconfigure \
         ros-$ROS_DISTRO-franka-description \
-        ros-$ROS-tf2-sensor-msgs \
+        ros-$ROS_DISTRO-tf2-sensor-msgs \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
