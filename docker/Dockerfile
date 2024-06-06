@@ -66,8 +66,6 @@ RUN apt update \
         python3-dev \
         python3-apt \
         python3-setuptools \
-        python3-tk \ 
-        python3-rosdep \
         # * tools
         cmake \
         lsb-release \
@@ -95,6 +93,8 @@ RUN mkdir -p /etc/apt/keyrings \
 
 RUN apt update \
     && apt install -y --no-install-recommends \
+        python3-tk  \ 
+        python3-rosdep \
         # * ROS depend tools
         ros-$ROS_DISTRO-moveit \        
         ros-$ROS_DISTRO-moveit-visual-tools \
@@ -102,9 +102,14 @@ RUN apt update \
         ros-$ROS_DISTRO-ddynamic-reconfigure \
         ros-$ROS_DISTRO-franka-description \
         ros-$ROS_DISTRO-tf2-sensor-msgs \
+        ros-$ROS_DISTRO-trac-ik \
+        ros-$ROS_DISTRO-joint-trajectory-controller \
+        ros-$ROS_DISTRO-joint-state-controller \
+        ros-$ROS_DISTRO-effort-controllers \
+        ros-$ROS_DISTRO-position-controllers \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
-
+    # ros-$ROS_DISTRO-joint-* \
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash" >>/home/$USER/.bashrc
 
 WORKDIR /
