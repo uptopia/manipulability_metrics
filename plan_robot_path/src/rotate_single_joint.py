@@ -15,9 +15,10 @@ import matplotlib.pyplot as plt
 from tf.transformations import quaternion_from_euler, euler_from_quaternion
 from geometry_msgs.msg import Pose, PoseStamped, TransformStamped
 # import geometry_msgs
+import tf
 
 epsilon = sys.float_info.epsilon
-# print("The value of epsilon is:", epsilon)
+# print("\033[33mThe value of epsilon is:", epsilon)
 
 def all_close(goal, actual, tolerance):
     """
@@ -47,7 +48,7 @@ class RotateSingleJoint():
     def __init__(self):
         super(RotateSingleJoint, self).__init__()
 
-        print('=========RotateSingleJoint=======')
+        print('\033[33m=========RotateSingleJoint=======')
         rospy.init_node("RotateSingleJoint", anonymous=True)
 
         try:
@@ -60,7 +61,7 @@ class RotateSingleJoint():
 
         self.group_name = rospy.get_param('/rotate_single_joint/group_name')#"manipulator"
         self.base_frame = rospy.get_param('/rotate_single_joint/base_frame')#"base_link"
-        print("self.group_name, self.base_frame:", self.group_name, self.base_frame)
+        print("\033[33mself.group_name, self.base_frame:", self.group_name, self.base_frame)
 
         self.move_group = moveit_commander.MoveGroupCommander(self.group_name)
 
@@ -76,10 +77,10 @@ class RotateSingleJoint():
                                                    moveit_msgs.msg.DisplayTrajectory,
                                                    queue_size=20)
         
-        # print("============ Planning frame: {}".format(self.move_group.get_planning_frame()))       #world
-        # print("============ End effector link: {}".format(self.move_group.get_end_effector_link())) #tool0
-        # print("============ Available Planning Groups: {}".format(self.robot.get_group_names()))    #manipulator
-        # print("============ Printing robot state: {}".format(self.robot.get_current_state()))
+        # print("\033[33m============ Planning frame: {}".format(self.move_group.get_planning_frame()))       #world
+        # print("\033[33m============ End effector link: {}".format(self.move_group.get_end_effector_link())) #tool0
+        # print("\033[33m============ Available Planning Groups: {}".format(self.robot.get_group_names()))    #manipulator
+        # print("\033[33m============ Printing robot state: {}".format(self.robot.get_current_state()))
 
         # # self.send_traj()
 
@@ -102,7 +103,7 @@ class RotateSingleJoint():
         # self.pose1()
         # self.rotate_joint(4,-pi/4, pi/4)
         # self.pose2()
-        # print("~~~~~~~~~~~~~~~~~~~", type(self.move_group.get_remembered_joint_values), dir(self.move_group.get_remembered_joint_values))
+        # print("\033[33m~~~~~~~~~~~~~~~~~~~", type(self.move_group.get_remembered_joint_values), dir(self.move_group.get_remembered_joint_values))
     def pose(self):
         self.move_group.set_max_acceleration_scaling_factor(0.1)
         self.move_group.set_max_velocity_scaling_factor(0.1)
@@ -156,7 +157,6 @@ class RotateSingleJoint():
         self.move_group.stop()
         self.move_group.clear_pose_targets()
 
-
     def rotate_joint(self, axis_num, angle_min, angle_max):
         # curr_joints = self.move_group.get_current_joint_values()
         start_joints = self.move_group.get_current_joint_values()
@@ -164,20 +164,20 @@ class RotateSingleJoint():
         start_joints[4] = angle_min
         end_joints[4] = angle_max
 
-        print("start_joints:", start_joints)
-        print("end_joints:", end_joints)
+        print("\033[33mstart_joints:", start_joints)
+        print("\033[33mend_joints:", end_joints)
         # self.move_group.set_pose_target(start_joints)
         self.move_group.set_named_target("home") #home, up
         traj1 = self.move_group.plan()
 
-        print("============ Visualizing traj1")
+        print("\033[33m============ Visualizing traj1")
         display_trajectory = moveit_msgs.msg.DisplayTrajectory()
 
         display_trajectory.trajectory_start = self.robot.get_current_state()
         display_trajectory.trajectory.append(traj1)
         self.display_trajectory_publisher.publish(display_trajectory)
 
-        print("============ Waiting while plan1 is visualized (again)...")
+        print("\033[33m============ Waiting while plan1 is visualized (again)...")
         rospy.sleep(5)
         self.move_group.go()
         # self.move_group.go(start_joints, wait=True)
@@ -210,6 +210,7 @@ class RotateSingleJoint():
     #     self.origin_degree[1] = origindegree[1]/3.14*180.0
     #     self.origin_degree[2] = origindegree[2]/3.14*180.0
     #     return all_close(joint_goal, current_joints, 0.01)
+        
     def back_up(self):
         # https://robot.czxy.com/docs/kinematics/moveit/goal/move/
         prev_joints_radian = self.move_group.get_current_joint_values()
@@ -227,58 +228,81 @@ class RotateSingleJoint():
         self.move_group.go(joint_goal, wait=True)
         self.move_group.stop()
 
+        #====================
+        #  Jacobian Matrix
+        #====================
         curr_joints_radian = self.move_group.get_current_joint_values()
         curr_joints_degree = self.move_group.get_current_joint_values()
         for id in range(len(curr_joints_radian)):
             curr_joints_degree[id]=curr_joints_radian[id]*(180.0/pi)
             prev_joints_degree[id]=prev_joints_radian[id]*(180.0/pi)
-        # # print("prev_joints: {:8.2f}, \ncurr_joints: {:8.2f}".format(prev_joints, curr_joints))
+        # # print("\033[33mprev_joints: {:8.2f}, \ncurr_joints: {:8.2f}".format(prev_joints, curr_joints))
             
-        print("prev_joints_degree:",', '.join('{:.2f}'.format(f) for f in prev_joints_degree))
-        print("curr_joints_degree:",', '.join('{:.2f}'.format(f) for f in curr_joints_degree))
-        print("joint_goal:",', '.join('{:.2f}'.format(f*(180.0/pi)) for f in joint_goal))
-
+        print("\033[33mprev_joints_degree:",', '.join('{:.2f}'.format(f) for f in prev_joints_degree))
+        print("\033[33mcurr_joints_degree:",', '.join('{:.2f}'.format(f) for f in curr_joints_degree))
+        print("\033[33mjoint_goal:",', '.join('{:.2f}'.format(f*(180.0/pi)) for f in joint_goal))
 
         matrix = np.array(self.move_group.get_jacobian_matrix(curr_joints_radian)) #use radian
-        print("jacobian matrix:\n", matrix)
-
-        # pp = self.move_group.get_current_pose().pose.position
-        # rr = self.move_group.get_current_pose().pose.orientation
-        # print(type(pp), pp)
-        # print(type(rr), rr)
-        # origindegree =  euler_from_quaternion([rr.x, rr.y, rr.z, rr.w]) 
-        # origin_degree = [0.0,0.0,0.0]
-        # origin_degree[0] = origindegree[0]/pi*180.0
-        # origin_degree[1] = origindegree[1]/pi*180.0
-        # origin_degree[2] = origindegree[2]/pi*180.0
-        # print("origindegree:", origindegree)
-        # tt = [pp.x, pp.y, pp.z, origin_degree[0], origin_degree[1], origin_degree[2]]
-
-        # print("curr_pose_pose:", pp)
-        # print("curr_pose_orient:", rr)
-        # print("target_pose:", tt)
-
-        # joint_angles = self.compute_IK(self.robot_chain, tt)
-        # print("curr_joints:",', '.join('{:.2f}'.format(f) for f in curr_joints))
-        # print("pykdl joints:",', '.join('{:.2f}'.format(f) for f in joint_angles))
-        # print("joint angles:", type(joint_angles)) #<class 'PyKDL.JntArray'>
-        # print(joint_angles[0])
-        
+        print("\033[33mjacobian matrix:\n", matrix)
+                
         num_joints =6
         joint_angles_array = PyKDL.JntArray(num_joints)
         for idx in range(num_joints):
-            joint_angles_array[idx] = curr_joints_radian[idx]#curr_joints_degree[idx]
-        # # joint_angles_array.rows = joint_angles
-        # jac = self.calculateJacobian(self.robot_chain, joint_angles) #np.matrix
+            joint_angles_array[idx] = curr_joints_radian[idx]       #use radian
         jac = self.calculateJacobian(self.robot_chain, joint_angles_array) #np.matrix #use degree
         jac_mat = self.kdl_to_mat(jac)
-        print("jacobian matrix PyKDL:\n", jac_mat)
+        print("\033[33mjacobian matrix PyKDL:\n", jac_mat)
 
         ellipsoid_1 = math.sqrt(np.linalg.det((matrix * matrix.transpose())))
-        print("ellipsoid 1:", ellipsoid_1)
+        print("\033[33mellipsoid 1:", ellipsoid_1)
         ellipsoid_2 = math.sqrt(np.linalg.det((jac_mat * jac_mat.transpose())))
-        print("ellipsoid 1, 2: ", ellipsoid_1, ellipsoid_2)
+        print("\033[33mellipsoid 1, 2: ", ellipsoid_1, ellipsoid_2)
 
+        #====================
+        #  Position
+        #====================
+        pp = self.move_group.get_current_pose().pose.position
+        rr = self.move_group.get_current_pose().pose.orientation
+        print("\033[33mposition:", pp.x, pp.y, pp.z)#type(pp), pp)
+        print("\033[33morientation:",rr.x, rr.y, rr.z, rr.w)#type(rr), rr)
+        print("\033[33mframd_id:", self.move_group.get_current_pose().header.frame_id)
+
+        # now = rospy.Time.now() #specific time, rospy.Time(0) recent time
+        # https://blog.csdn.net/qq_39779233/article/details/105478695
+        tf_listener = tf.TransformListener()
+        tf_listener.waitForTransform("/base_link", "/tool0", rospy.Time(0), rospy.Duration(4.0))
+        (trans,rot) = tf_listener.lookupTransform("/base_link", "/tool0", rospy.Time(0))
+        print("\033[33mtrans: {},\nrot:: {}".format(trans, rot))
+
+        # pp.x, pp.y, pp.z = trans[0], trans[1], trans[2]
+        # rr.x, rr.y, rr.z, rr.w = rot[0], rot[1], rot[2], rot[3]
+        # print("\033[33mposition:", pp.x, pp.y, pp.z)#type(pp), pp)
+        # print("\033[33morientation:",rr.x, rr.y, rr.z, rr.w)#type(rr), rr)
+
+        euler = tf.transformations.euler_from_quaternion((rr.x, rr.y, rr.z, rr.w))
+        roll, pitch, yaw = euler[0], euler[1], euler[2]
+        
+        joint_angles1 = self.compute_IK_from_rpy(self.robot_chain, pp, euler)
+        print("\033[33mjoint_angles1:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles1))
+
+        joint_angles2 = self.compute_IK_from_quat(self.robot_chain, pp, rr)
+        print("\033[33mjoint_angles2:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles2))
+
+        # origin_degree =  euler_from_quaternion([rr.x, rr.y, rr.z, rr.w]) 
+        # # print("\033[33morigindegree:", origin_degree, roll, pitch, yaw)
+        # joint_angles3 = self.compute_IK_from_rpy(self.robot_chain, pp, origin_degree)
+        # print("\033[33mjoint_angles3:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles3))
+
+        #=====
+        curr_joints_radian = self.move_group.get_current_joint_values()
+        curr_joints_degree = self.move_group.get_current_joint_values()
+        for id in range(len(curr_joints_radian)):
+            curr_joints_degree[id]=curr_joints_radian[id]*(180.0/pi)
+            prev_joints_degree[id]=prev_joints_radian[id]*(180.0/pi)
+        # # print("\033[33mprev_joints: {:8.2f}, \ncurr_joints: {:8.2f}".format(prev_joints, curr_joints))
+            
+        print("\033[33mprev_joints_degree:",', '.join('{:.2f}'.format(f) for f in prev_joints_degree))
+        print("\033[33mcurr_joints_degree:",', '.join('{:.2f}'.format(f) for f in curr_joints_degree))
 
 
     def back_home(self):
@@ -286,17 +310,15 @@ class RotateSingleJoint():
         prev_joints = self.move_group.get_current_joint_values()
         self.move_group.set_named_target("home") #home, up
         success = self.move_group.go()
-        # print("success:",success)
+        # print("\033[33msuccess:",success)
         # if success:
-        #     print("success")
+        #     print("\033[33msuccess")
         # else:
-        #     print("failed")
+        #     print("\033[33mfailed")
         self.move_group.stop()
 
         curr_joints = self.move_group.get_current_joint_values()
-        print("prev_joints, curr_joints:", prev_joints, curr_joints)
-
-
+        print("\033[33mprev_joints, curr_joints:", prev_joints, curr_joints)
 
     def plot_mscore(self, mscore_name, mscore_list):
 
@@ -318,17 +340,43 @@ class RotateSingleJoint():
         # d5: 0.09465
         # d6: 0.0823
 
-        # DH parameters
-        a = [0.0, -0.425, -0.39225, 0.0, 0.0, 0.0]
-        alpha = [math.pi/2, 0.0, 0.0, math.pi/2, -math.pi/2, 0.0]
-        d = [0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823]
-        theta = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        chain = PyKDL.Chain()
+        # # DH parameters
+        # a = [0.0, -0.425, -0.39225, 0.0, 0.0, 0.0]
+        # alpha = [math.pi/2, 0.0, 0.0, math.pi/2, -math.pi/2, 0.0]
+        # d = [0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823]
+        # theta = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        # chain = PyKDL.Chain()
 
-        for i in range(6):
-            chain.addSegment(PyKDL.Segment(PyKDL.Joint(PyKDL.Joint.RotZ),\
-                            PyKDL.Frame(PyKDL.Rotation.RotZ(theta[i])*PyKDL.Rotation.RotX(alpha[i]), \
-                                        PyKDL.Vector(a[i], -d[i]*math.sin(alpha[i]), d[i]*math.cos(alpha[i])))))
+        # for i in range(6):
+        #     chain.addSegment(PyKDL.Segment(PyKDL.Joint(PyKDL.Joint.RotZ),\
+        #                     PyKDL.Frame(PyKDL.Rotation.RotZ(theta[i])*PyKDL.Rotation.RotX(alpha[i]), \
+        #                                 PyKDL.Vector(a[i], -d[i]*math.sin(alpha[i]), d[i]*math.cos(alpha[i])))))
+        
+        #================#
+        #    method2
+        #================#
+        chain = PyKDL.Chain()
+        dh_params = [
+            # a,       alpha,        d,     theta
+            (0.0,      0.5*math.pi,  0.089159, 0.0),
+            (-0.42500, 0.0,          0.0,      0.0),
+            (-0.39225, 0.0,          0.0,      0.0),
+            (0.0,      0.5*math.pi,  0.10915,  0.0),
+            (0.0,      -0.5*math.pi, 0.09465,  0.0),
+            (0.0,      0.0,          0.0823,   0.0),
+        ]
+        for a, alpha, d, theta in dh_params:
+            # frame = PyKDL.Frame(PyKDL.Rotation.RPY(0, alpha, theta),
+            #                     PyKDL.Vector(a, 0, d))
+            print(a, alpha, d, theta)
+            
+            frame = PyKDL.Frame()
+            frame = frame.DH(a, alpha, d, theta)
+            joint = PyKDL.Joint(PyKDL.Joint(PyKDL.Joint.RotZ))
+            segment= PyKDL.Segment(joint, frame)
+            chain.addSegment(segment)
+        
+        
         return chain
 
     def create_ur5e_chain(self):
@@ -367,7 +415,7 @@ class RotateSingleJoint():
         chain = PyKDL.Chain()
         dh_params = [
             # a,       alpha,        d,     theta
-            (0.0,      0.5*math.pi,  0.163, 0.0),
+            (0.0,      0.5*math.pi,  0.163, math.pi),
             (-0.425,   0.0,          0.0,   0.0),
             (-0.39225, 0.0,          0.0,   0.0),
             (0.0,      0.5*math.pi,  0.134, 0.0),
@@ -404,37 +452,64 @@ class RotateSingleJoint():
                 mat[i,j] = m[i,j]
         return mat
     
-    def compute_IK_from_pose(self, chain, target_pose):
-        '''
-        Inverse Kinematics
-        '''
-        fk = PyKDL.ChainFkSolverPos_recursive(chain)
-        ikv = PyKDL.ChainIkSolverVel_pinv(chain)  #ChainIkSolverVel_pinv ikv? or others
-        ik = PyKDL.ChainIkSolverPos_NR(chain, fk, ikv)
+    # def compute_FK_from_joint(self, chain, joints):
+    #     '''Forward Kinematics'''
+    #     fk = PyKDL.ChainFkSolverPos_recursive(chain)
 
-        target_frame = PyKDL.Frame(PyKDL.Rotation.RPY(target_pose[3],target_pose[4], target_pose[5]),\
-                                    PyKDL.Vector(target_pose[0],target_pose[1], target_pose[2]))
-        initial_joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
-        joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
-        ik.CartToJnt(initial_joint_angles, target_frame, joint_angles)
-        # print("joint_angles: ", joint_angles, type(joint_angles), list(joint_angles), type(list(joint_angles)))
+    #     result = fk.JntToCart()
+
+
+    #     endeffec_frame = PyKDL.Frame()
+    #     kinematics_status = self._fk_kdl.JntToCart(joint_list_to_kdl(q),
+    #                                                endeffec_frame,
+    #                                                link_number)
+    #     if kinematics_status >= 0:
+    #         p = endeffec_frame.p
+    #         M = endeffec_frame.M
+    #         return np.mat([[M[0,0], M[0,1], M[0,2], p.x()], 
+    #                        [M[1,0], M[1,1], M[1,2], p.y()], 
+    #                        [M[2,0], M[2,1], M[2,2], p.z()],
+    #                        [     0,      0,      0,     1]])
+    #     else:
+    #         return None
+
+    def compute_IK_from_rpy(self, chain, position, rpy):
+        '''Inverse Kinematics'''
+        target_frame = PyKDL.Frame(PyKDL.Rotation.RPY(rpy[0],rpy[1], rpy[2]),\
+                                    PyKDL.Vector(position.x, position.y, position.z))
+        
+        joint_angles = self.compute_IK_from_frame(chain, target_frame)
+
+        return joint_angles
+
+    def compute_IK_from_quat(self, chain, position, quat):
+        '''Inverse Kinematics'''
+
+        target_frame = PyKDL.Frame(PyKDL.Rotation.Quaternion(quat.x, quat.y, quat.z, quat.w),\
+                                    PyKDL.Vector(position.x, position.y, position.z))
+
+        joint_angles = self.compute_IK_from_frame(chain, target_frame)
+
         return joint_angles
     
     def compute_IK_from_frame(self, chain, target_frame):
-        '''
-        Inverse Kinematics
-        '''
-        fk = PyKDL.ChainFkSolverPos_recursive(chain)
-        ikv = PyKDL.ChainIkSolverVel_pinv(chain)
-        ik = PyKDL.ChainIkSolverPos_NR(chain, fk, ikv)
+        '''Inverse Kinematics'''
+        # fk = PyKDL.ChainFkSolverPos_recursive(chain)
+        # ikv = PyKDL.ChainIkSolverVel_pinv(chain)
+        # ik = PyKDL.ChainIkSolverPos_NR(chain, fk, ikv) #ok
+        ik = PyKDL.ChainIkSolverPos_LMA(chain) #ok
+        # ik = PyKDL.ChainIkSolverPos(chain)  #X
 
-        initial_joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
         joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
-        ik.CartToJnt(initial_joint_angles, target_frame, joint_angles)
-        # print("joint_angles: ", joint_angles, type(joint_angles), list(joint_angles), type(list(joint_angles)))
+        result = ik.CartToJnt(PyKDL.JntArray(chain.getNrOfJoints()), target_frame, joint_angles)
+        # print("compute_IK_from_frame result:", result)
+
+        # initial_joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
+        # joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
+        # ik.CartToJnt(initial_joint_angles, target_frame, joint_angles)
+        # print("\033[33mjoint_angles: ", joint_angles, type(joint_angles), list(joint_angles), type(list(joint_angles)))
         return joint_angles
     
-
     def calculateJacobian(self, chain, joint_angles):
         # https://github.com/wuphilipp/sawyer_kdl/blob/master/launch/sawyer_kdl_test.launch
         # https://github.com/RethinkRobotics/baxter_pykdl/blob/master/src/baxter_kdl/kdl_kinematics.py#L226
@@ -474,7 +549,7 @@ class RotateSingleJoint():
         Selbow_score = []
         Swrist_score = []
         for cnt in range(len(list(joint_angles))):
-            print("joint #:", cnt, list(joint_angles)[cnt])
+            print("\033[33mjoint #:", cnt, list(joint_angles)[cnt])
             ang = list(joint_angles)[cnt]
             
             # Compute Joint-Limits Score (JL-score)
@@ -523,11 +598,11 @@ class RotateSingleJoint():
         
         # Compute Manipulability Score (M-score)
         M_score = min(min(JL_score), min(Sshoulder_score), min(Selbow_score), min(Swrist_score))
-        print("JL_score:", JL_score, min(JL_score))
-        print("Sshoulder_score:", Sshoulder_score, min(Sshoulder_score))
-        print("Selbow_score:", Selbow_score, min(Selbow_score))
-        print("Swrist_score:", Swrist_score, min(Swrist_score))
-        print("M_score:", M_score)
+        print("\033[33mJL_score:", JL_score, min(JL_score))
+        print("\033[33mSshoulder_score:", Sshoulder_score, min(Sshoulder_score))
+        print("\033[33mSelbow_score:", Selbow_score, min(Selbow_score))
+        print("\033[33mSwrist_score:", Swrist_score, min(Swrist_score))
+        print("\033[33mM_score:", M_score)
         
         return M_score
 
@@ -538,7 +613,7 @@ class RotateSingleJoint():
 
         # # Compute IK
         # joint_angles = self.compute_IK(self.robot_chain, target_pose)
-        # # print("joint angles:", joint_angles)
+        # # print("\033[33mjoint angles:", joint_angles)
 
         joint_angles_array = PyKDL.JntArray(len(joint_angles))
         # joint_angles_array.rows = joint_angles
@@ -556,10 +631,8 @@ class RotateSingleJoint():
 
         return manip_ellipsoid, manip_score
 
-
-
     def send_traj(self):
-        print("send_traj")
+        print("\033[33msend_traj")
         # Create the topic message
         traj = JointTrajectory()
         traj.header = Header()
@@ -574,7 +647,7 @@ class RotateSingleJoint():
         traj.header.stamp = rospy.Time.now()
 
         while not rospy.is_shutdown():
-            print("cnt:", cnt)
+            print("\033[33mcnt:", cnt)
             cnt += 1
 
             if cnt%2 == 1:
@@ -605,9 +678,9 @@ class RotateSingleJoint():
         ## thing we want to do is move it to a slightly better configuration.
         # We can get the joint values from the self.move_group and adjust some of the values:
         joint_goal = move_group.get_current_joint_values()
-        # print("joint_goal:", joint_goal, type(joint_goal))
+        # print("\033[33mjoint_goal:", joint_goal, type(joint_goal))
         # manip1, manip2 = self.calculate_mscore_from_joints(joint_goal)
-        # print("manip1, manip2:", manip1, manip2)
+        # print("\033[33mmanip1, manip2:", manip1, manip2)
         # self.manip_ellipsoid_list.append(manip1)
         # self.manip_score_list.append(manip2)
 
@@ -622,11 +695,11 @@ class RotateSingleJoint():
         # The go command can be called with joint values, poses, or without any
         # parameters if you have already set the pose or joint target for the self.move_group
         move_group.go(joint_goal, wait=True)
-        print("gogogo======================")
+        print("\033[33mgogogo======================")
 
         # Calling ``stop()`` ensures that there is no residual movement
         move_group.stop()
-        print("stopstop======================")
+        print("\033[33mstopstop======================")
         # self.plot_mscore('m1', self.manip_ellipsoid_list)
         # self.plot_mscore('m2', self.manip_score_list)
 
@@ -641,3 +714,40 @@ if __name__ == "__main__":
         RotateSingleJoint()
     except rospy.ROSInterruptException:
         print ("Program interrupted before completion")
+
+
+
+                # print("\033[33mee_link:", self.ee_link)
+        # tf_listener = tf.TransformListener()
+        # # print(tf_listener.allFramesAsDot())
+        # # print(tf_listener.allFramesAsString())
+        # # print(tf_listener.getFrameStrings())
+        # # print(tf_listener.frameExists("world"))
+        # print(tf_listener.frameExists("upper_arm_link"))
+        # print(tf_listener.frameExists("wrist_3_link"))
+        # # t = tf_listener.getLatestCommonTime("/upper_arm_link", "/wrist_3_link")
+        # # position, quaternion = tf_listener.lookupTransform("/upper_arm_link", "/wrist_3_link", rospy.Time(0))
+        # # print("\033[33mbask_link-tool0 (position, quaternion):", position, quaternion)
+        # # if tf_listener.frameExists("/upper_arm_link") and tf_listener.frameExists("/wrist_3_link"):
+        # #     t = self.tf.getLatestCommonTime("/upper_arm_link", "/wrist_3_link")
+        # #     position, quaternion = tf_listener.lookupTransform("/upper_arm_link", "/wrist_3_link", t)#rospy.Time(0))
+        # #     print("\033[33mbask_link-tool0 (position, quaternion):", position, quaternion)
+        # # else:
+        # #     print("\033[33mNOnononono")
+        # (base_trans_tool, base_rot_tool) = tf_listener.lookupTransform("world", "world", rospy.Time(0))
+        # print("\033[33mbask_link-tool0 (position, quaternion):", base_trans_tool, base_rot_tool)
+
+        # # try:
+		# # 	(base_trans_tool, base_rot_tool) = tf_listener.lookupTransform(self.base_link, self.tip_link, rospy.Time(0))
+        # #     print("\033[33mbask_link-tool0 (position, quaternion):", base_trans_tool, base_rot_tool)
+		# # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+		# # 	rospy.logwarn('lookupTransform for robot failed!, ' + self.base_link + ', ' + self.tip_link)
+
+
+        # base2tool_pose = tf_listener.lookupTransform("/world", "/tool0", rospy.Time(0))
+        # print("\033[33mbask_link-tool0 pose:", base2tool_pose)
+   
+        # # tf_listener = tf.TransformListener()
+        # # print(tf_listener.allFramesAsString())
+        # # (trans, rot) = tf_listener.lookupTransform("fr3_link0", "fr3_link1", rospy.Time())
+        # # rospy.loginfo('Translation of obj', trans)
