@@ -17,6 +17,15 @@ from geometry_msgs.msg import Pose, PoseStamped, TransformStamped
 # import geometry_msgs
 import tf
 
+import sys
+
+# Add the path to the Python library to sys.path
+library_path = "/home/user/upup/zMANIP/manip_metrics_ws/src/ur_ikfast"
+sys.path.append(library_path)
+# from ur_ikfast.ur_ikfast import ur_kinematics
+from ur_ikfast import ur_kinematics
+
+
 epsilon = sys.float_info.epsilon
 # print("\033[33mThe value of epsilon is:", epsilon)
 
@@ -59,6 +68,7 @@ class RotateSingleJoint():
             rospy.loginfo("could not connect to MoveIt in time, exiting")
             rospy.signal_shutdown('fatal error')        
 
+        self.robot_name = rospy.get_param('/rotate_single_joint/robot_name')#ur5, ur5e
         self.group_name = rospy.get_param('/rotate_single_joint/group_name')#"manipulator"
         self.base_frame = rospy.get_param('/rotate_single_joint/base_frame')#"base_link"
         print("\033[33mself.group_name, self.base_frame:", self.group_name, self.base_frame)
@@ -86,8 +96,34 @@ class RotateSingleJoint():
         print("\033[33minit_joints:",', '.join('{:.4f}'.format(180.0*f/math.pi) for f in init_joints))
 
         # # self.send_traj()
+        self.tf_listener = tf.TransformListener()
 
-        self.robot_chain = self.create_ur5e_chain()
+        if self.robot_name == "ur5":
+            self.robot_chain = self.create_ur5_chain()
+            self.ur5e_arm = ur_kinematics.URKinematics('ur5')
+        elif self.robot_name == "ur5e":
+            self.robot_chain = self.create_ur5e_chain()
+            self.ur5e_arm = ur_kinematics.URKinematics('ur5e')
+
+        # joint_angles = [-3.1, -1.6, 1.6, -1.6, -1.6, 0.]  # in radians
+        # print("joint angles", joint_angles)
+
+        # pose_quat = ur3e_arm.forward(joint_angles)
+        # pose_matrix = ur3e_arm.forward(joint_angles, 'matrix')
+
+        # print("forward() quaternion \n", pose_quat)
+        # print("forward() matrix \n", pose_matrix)
+
+        # # print("inverse() all", ur3e_arm.inverse(pose_quat, True))
+        # print("inverse() one from quat", ur3e_arm.inverse(pose_quat, False, q_guess=joint_angles))
+
+        # print("inverse() one from matrix", ur3e_arm.inverse(pose_matrix, False, q_guess=joint_angles))
+
+
+        # self.tf_listener.waitForTransform("/world", "/base_link", rospy.Time(0), rospy.Duration(4.0))
+        # (trans,rot) = self.tf_listener.lookupTransform("/world", "/base_link", rospy.Time(0))
+        # print("\033[33mtf_listener trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+        #                         .format(trans[0], trans[1], trans[2], rot[0], rot[1], rot[2], rot[3]))
 
         # self.manip_ellipsoid_list = []
         # self.manip_score_list = []
@@ -100,9 +136,9 @@ class RotateSingleJoint():
         
     def run_pose(self):
         self.back_up()
-        self.check_jacobian()
-        self.check_IK()
-        self.check_FK()
+        # self.check_jacobian()
+        # self.check_IK()
+        # self.check_FK()
         # self.back_home()
         # self.rotate_joint(4,-pi/4, pi/4)
         # self.pose()
@@ -193,20 +229,19 @@ class RotateSingleJoint():
         # self.move_group.stop()
         # self.move_group.clear_pose_targets()
 
-    # def pose(self):
-    #     group = self.group
-    #     group.set_max_acceleration_scaling_factor(0.1)
-    #     group.set_max_velocity_scaling_factor(0.1)
-    #     joint_goal = group.get_current_joint_values()
-    #     joint_goal[0] = -pi * 0.5
-    #     joint_goal[1] = -pi * 0.5
-    #     joint_goal[2] = -pi * 0.5
-    #     joint_goal[3] = -pi * 0.5
-    #     joint_goal[4] = pi * 0.5
-    #     joint_goal[5] = pi * 0.5    
-    #     group.go(joint_goal, wait=True)
-    #     group.stop()
-    #     group.clear_pose_targets()
+    def pose(self):
+        group = self.group
+        group.set_max_acceleration_scaling_factor(0.1)
+        group.set_max_velocity_scaling_factor(0.1)
+        joint_goal = group.get_current_joint_values()
+        joint_goal[0] = -pi * 0.5
+        joint_goal[1] = -pi * 0.5
+        joint_goal[2] = -pi * 0.5
+        joint_goal[3] = -pi * 0.5
+        joint_goal[4] = pi * 0.5
+        joint_goal[5] = pi * 0.5    
+        group.go(joint_goal, wait=True)
+        group.stop()
     #     current_joints = group.get_current_joint_values()
     #     origin_orientation =  group.get_current_pose().pose.orientation
     #     origindegree =  euler_from_quaternion([origin_orientation.x, origin_orientation.y, origin_orientation.z, origin_orientation.w]) 
@@ -216,6 +251,8 @@ class RotateSingleJoint():
     #     self.origin_degree[1] = origindegree[1]/3.14*180.0
     #     self.origin_degree[2] = origindegree[2]/3.14*180.0
     #     return all_close(joint_goal, current_joints, 0.01)
+        group.clear_pose_targets()
+
     def check_jacobian(self):
         print('\033[32m=========check_jacobian=======')
         #=======================
@@ -268,9 +305,8 @@ class RotateSingleJoint():
         # tf_listener Current Pose
         # https://blog.csdn.net/qq_39779233/article/details/105478695 
         # now = rospy.Time.now() #specific time, rospy.Time(0) recent time
-        tf_listener = tf.TransformListener()
-        tf_listener.waitForTransform("/base_link", "/tool0", rospy.Time(0), rospy.Duration(4.0))
-        (trans,rot) = tf_listener.lookupTransform("/base_link", "/tool0", rospy.Time(0))
+        self.tf_listener.waitForTransform("/base_link", "/tool0", rospy.Time(0), rospy.Duration(4.0))
+        (trans,rot) = self.tf_listener.lookupTransform("/base_link", "/tool0", rospy.Time(0))
         print("\033[33mtf_listener trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
                                 .format(trans[0], trans[1], trans[2], rot[0], rot[1], rot[2], rot[3]))
 
@@ -283,10 +319,21 @@ class RotateSingleJoint():
         # roll, pitch, yaw = euler[0], euler[1], euler[2]
         
         joint_angles1 = self.compute_IK_from_rpy(self.robot_chain, pp, euler)
-        print("\033[33mjoint_angles1:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles1))
+        if joint_angles1 is not None:
+            print("\033[33mjoint_angles1:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles1))
 
         joint_angles2 = self.compute_IK_from_quat(self.robot_chain, pp, rr)
-        print("\033[33mjoint_angles2:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles2))
+        if joint_angles2 is not None:
+            print("\033[33mjoint_angles2:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles2))
+
+        # ur_ikfast
+        joint_angles = np.zeros(6) 
+        # joint_angles = np.random.uniform(-1*np.pi, 1*np.pi, size=6)
+        # joint_angles = self.move_group.get_current_joint_values()
+        pose_quat = [pp.x, pp.y, pp.z, rr.x, rr.y, rr.z, rr.w]
+        joint_angles3 = self.ur5e_arm.inverse(pose_quat, False, q_guess=joint_angles)
+        if joint_angles3 is not None:
+            print("\033[33mjoint_angles3:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles3))
 
         # Gazebo, MoveIt Current Joint Value
         # actual_joint_angle = self.move_group.get_current_joint_values()
@@ -313,14 +360,30 @@ class RotateSingleJoint():
         pos, quat = self.compute_FK_from_joint(self.robot_chain, curr_joints_radian)
         print("\033[33mPyKDL  trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
                                 .format(pos.x(), pos.y(), pos.z(), quat[0], quat[1], quat[2], quat[3]))
+        
+        # ur_ikfast
+        pose_quat = self.ur5e_arm.forward(curr_joints_radian)
+        pose_matrix = self.ur5e_arm.forward(curr_joints_radian, 'matrix')
+        print("\033[33mikfast trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+                                .format(pose_quat[0], pose_quat[1], pose_quat[2], pose_quat[3], pose_quat[4], pose_quat[5], pose_quat[6]))
+        # print("forward() quaternion \n", pose_quat)
+        # print("forward() matrix \n", pose_matrix)
+
     def back_up(self):
         joint_goal = self.move_group.get_current_joint_values()
-        joint_goal[0] = -pi * 0.5
-        joint_goal[1] = -pi * 0.5
-        joint_goal[2] = -pi * 0.5
-        joint_goal[3] = -pi * 0.5
-        joint_goal[4] = pi * 0.5
-        joint_goal[5] = pi * 0.5    
+        # joint_goal[0] = -pi * 0.5+(45.0/180.0)*3.14
+        # joint_goal[1] = 0#-pi * 0.5
+        # joint_goal[2] = (-pi * 0.5)+(70.0/180.0)*3.14
+        # joint_goal[3] = -pi * 0.5
+        # joint_goal[4] = pi * 0.5
+        # joint_goal[5] = pi * 0.5    
+
+        joint_goal[0] = ((-90+45)/180.0)*pi
+        joint_goal[1] = ((-90+ 0)/180.0)*pi 
+        joint_goal[2] = ((-90+ 0)/180.0)*pi
+        joint_goal[3] = ((-90+ 0)/180.0)*pi
+        joint_goal[4] = (( 90+ 0)/180.0)*pi
+        joint_goal[5] = (( 90+ 0)/180.0)*pi    
         self.move_group.go(joint_goal, wait=True)
         self.move_group.stop()
         print("\033[33mjoint_goal:",', '.join('{:.2f}'.format(f*(180.0/pi)) for f in joint_goal))
@@ -384,7 +447,7 @@ class RotateSingleJoint():
         chain = PyKDL.Chain()
         dh_params = [
             # a,       alpha,        d,     theta
-            (0.0,      0.5*math.pi,  0.089159, 0.0),
+            (0.0,      0.5*math.pi,  0.089159, math.pi),
             (-0.42500, 0.0,          0.0,      0.0),
             (-0.39225, 0.0,          0.0,      0.0),
             (0.0,      0.5*math.pi,  0.10915,  0.0),
@@ -527,23 +590,83 @@ class RotateSingleJoint():
 
         return joint_angles
     
-    def compute_IK_from_frame(self, chain, target_frame):
+    def compute_IK_from_frame(self, chain, target_frame, q_guess=None, min_joints=None, max_joints=None):
         # https://blog.csdn.net/moshuilangting/article/details/131960835
         '''Inverse Kinematics'''
-
+        #================
+        #  Method 1
+        #================
         ik = PyKDL.ChainIkSolverPos_LMA(chain)
 
         initial_joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
-        initial_joint_angles[0]=math.pi
+        initial_joint_angles[0]=-math.pi/2.0
+        initial_joint_angles[1]=-math.pi/2.0
+        initial_joint_angles[2]=-math.pi/2.0
+        initial_joint_angles[3]=-math.pi/2.0
+        initial_joint_angles[4]=math.pi/2.0
+        initial_joint_angles[5]=math.pi/2.0
         joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
+        # print("initial_joint_angles", initial_joint_angles)
         
         ik_status = ik.CartToJnt(initial_joint_angles, target_frame, joint_angles)
         if ik_status >= 0:
-            print("\033[33mInverse Kinematics SUCCEEDED", ik_status)
+            # print("\033[33mInverse Kinematics SUCCEEDED", ik_status)
             return joint_angles
         else:
             print("\033[33mInverse Kinematics FAILED")
             return None
+
+        #================
+        #  Method 2
+        #================
+        # #https://robot.czxy.com/docs/kinematics/kdl/base/
+        # #http://docs.ros.org/en/hydro/api/pykdl_utils/html/kdl__kinematics_8py_source.html
+        # #https://answers.ros.org/question/68737/why-is-pykdl-not-converging/
+        # #ChainIkSolverPos_NR is very easy to be trapped in local minimums. Use ChainIkSolverPos_LMA
+        # # # if min_joints is None:
+        # # #     min_joints = self.joint_safety_lower
+        # # # if max_joints is None:
+        # # #     max_joints = self.joint_safety_upper
+        # # # mins_kdl = self.joint_list_to_kdl(min_joints)
+        # # # maxs_kdl = self.joint_list_to_kdl(max_joints)
+        # # min_joints = [-math.pi,-math.pi,-math.pi,-math.pi,-math.pi,-math.pi]
+        # # max_joints = [ math.pi, math.pi, math.pi, math.pi, math.pi, math.pi]
+        # # mins_kdl = self.joint_list_to_kdl(min_joints)
+        # # maxs_kdl = self.joint_list_to_kdl(max_joints)
+
+        # # if q_guess == None:
+        # #     # use the midpoint of the joint limits as the guess
+        # #     lower_lim = np.where(np.isfinite(min_joints), min_joints, 0.)
+        # #     upper_lim = np.where(np.isfinite(max_joints), max_joints, 0.)
+        # #     q_guess = (lower_lim + upper_lim) / 2.0
+        # #     # print("q_guess:", q_guess)
+        # #     q_guess = np.where(np.isnan(q_guess), [0.]*len(q_guess), q_guess)
+        # #     # print("\033[33m(lower_lim, upper_lim)=", lower_lim, upper_lim)
+        # #     # print("q_guess:", q_guess)
+
+        # fk = PyKDL.ChainFkSolverPos_recursive(chain)
+        # ik_v_kdl = PyKDL.ChainIkSolverVel_pinv(chain)
+        # # ik = PyKDL.ChainIkSolverPos_NR_JL(chain, mins_kdl, maxs_kdl, fk, ik_v_kdl)
+        # ik = PyKDL.ChainIkSolverPos_NR(chain, fk, ik_v_kdl)
+
+        # initial_joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
+        # initial_joint_angles[0]=-math.pi
+        # initial_joint_angles[1]=-math.pi
+        # initial_joint_angles[2]=-math.pi
+        # initial_joint_angles[3]=-math.pi
+        # initial_joint_angles[4]=math.pi
+        # initial_joint_angles[5]=math.pi
+        # joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
+
+        # # q_guess_kdl = self.joint_list_to_kdl(q_guess)
+        # # ik_status = ik.CartToJnt(q_guess_kdl, target_frame, joint_angles)
+        # ik_status = ik.CartToJnt(initial_joint_angles, target_frame, joint_angles)
+        # if ik_status >= 0:
+        #     # print("\033[33mInverse Kinematics SUCCEEDED", ik_status)
+        #     return joint_angles#np.array(self.joint_kdl_to_list(joint_angles))
+        # else:
+        #     print("\033[33mInverse Kinematics FAILED")
+        #     return None
     
     def calculateJacobian(self, chain, joint_angles):
         # https://github.com/wuphilipp/sawyer_kdl/blob/master/launch/sawyer_kdl_test.launch
@@ -749,40 +872,3 @@ if __name__ == "__main__":
         RotateSingleJoint()
     except rospy.ROSInterruptException:
         print ("Program interrupted before completion")
-
-
-
-                # print("\033[33mee_link:", self.ee_link)
-        # tf_listener = tf.TransformListener()
-        # # print(tf_listener.allFramesAsDot())
-        # # print(tf_listener.allFramesAsString())
-        # # print(tf_listener.getFrameStrings())
-        # # print(tf_listener.frameExists("world"))
-        # print(tf_listener.frameExists("upper_arm_link"))
-        # print(tf_listener.frameExists("wrist_3_link"))
-        # # t = tf_listener.getLatestCommonTime("/upper_arm_link", "/wrist_3_link")
-        # # position, quaternion = tf_listener.lookupTransform("/upper_arm_link", "/wrist_3_link", rospy.Time(0))
-        # # print("\033[33mbask_link-tool0 (position, quaternion):", position, quaternion)
-        # # if tf_listener.frameExists("/upper_arm_link") and tf_listener.frameExists("/wrist_3_link"):
-        # #     t = self.tf.getLatestCommonTime("/upper_arm_link", "/wrist_3_link")
-        # #     position, quaternion = tf_listener.lookupTransform("/upper_arm_link", "/wrist_3_link", t)#rospy.Time(0))
-        # #     print("\033[33mbask_link-tool0 (position, quaternion):", position, quaternion)
-        # # else:
-        # #     print("\033[33mNOnononono")
-        # (base_trans_tool, base_rot_tool) = tf_listener.lookupTransform("world", "world", rospy.Time(0))
-        # print("\033[33mbask_link-tool0 (position, quaternion):", base_trans_tool, base_rot_tool)
-
-        # # try:
-		# # 	(base_trans_tool, base_rot_tool) = tf_listener.lookupTransform(self.base_link, self.tip_link, rospy.Time(0))
-        # #     print("\033[33mbask_link-tool0 (position, quaternion):", base_trans_tool, base_rot_tool)
-		# # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-		# # 	rospy.logwarn('lookupTransform for robot failed!, ' + self.base_link + ', ' + self.tip_link)
-
-
-        # base2tool_pose = tf_listener.lookupTransform("/world", "/tool0", rospy.Time(0))
-        # print("\033[33mbask_link-tool0 pose:", base2tool_pose)
-   
-        # # tf_listener = tf.TransformListener()
-        # # print(tf_listener.allFramesAsString())
-        # # (trans, rot) = tf_listener.lookupTransform("fr3_link0", "fr3_link1", rospy.Time())
-        # # rospy.loginfo('Translation of obj', trans)
