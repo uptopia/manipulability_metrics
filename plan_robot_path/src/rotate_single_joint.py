@@ -1,35 +1,34 @@
 #!/usr/bin/env python3
 
-from std_msgs.msg import Header
-from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 import sys
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+
+import PyKDL
+
+import tf
 import rospy
 import moveit_commander
 import moveit_msgs.msg
+from std_msgs.msg import Header
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from moveit_commander.conversions import pose_to_list
-from math import pi
-import math
-import PyKDL
-import numpy as np
-import matplotlib.pyplot as plt
 from tf.transformations import quaternion_from_euler, euler_from_quaternion, quaternion_matrix
 from geometry_msgs.msg import Pose, PoseStamped, TransformStamped
-# import geometry_msgs
-import tf
 
-import sys
-np.set_printoptions(formatter={'float': '{: 0.10f}'.format})
-# Add the path to the Python library to sys.path
+# ur_ikfast method
 library_path = "/home/user/upup/zMANIP/manip_metrics_ws/src/ur_ikfast"
 sys.path.append(library_path)
 from ur_ikfast import ur_kinematics
 
-# library_path = "/home/fatfat/work/python-Universal-robot-kinematics"
-# sys.path.append(library_path)
+# analytic method
 from universal_robot_kinematics import forKine, invKine
 
 epsilon = sys.float_info.epsilon
 # print("\033[33mThe value of epsilon is:", epsilon)
+
+np.set_printoptions(formatter={'float': '{: 0.10f}'.format})
 
 def all_close(goal, actual, tolerance):
     """
@@ -149,12 +148,12 @@ class RotateSingleJoint():
         self.move_group.set_max_acceleration_scaling_factor(0.1)
         self.move_group.set_max_velocity_scaling_factor(0.1)
         joint_goal = self.move_group.get_current_joint_values()
-        joint_goal[0] = -pi * 0.5
-        joint_goal[1] = -pi * 0.5
-        joint_goal[2] = -pi * 0.5
-        joint_goal[3] = -pi * 0.5
-        joint_goal[4] = pi * 0.5
-        joint_goal[5] = pi * 0.5    
+        joint_goal[0] = -math.pi * 0.5
+        joint_goal[1] = -math.pi * 0.5
+        joint_goal[2] = -math.pi * 0.5
+        joint_goal[3] = -math.pi * 0.5
+        joint_goal[4] =  math.pi * 0.5
+        joint_goal[5] =  math.pi * 0.5    
         self.move_group.go(joint_goal, wait=True)
         self.move_group.stop()
         self.move_group.clear_pose_targets()
@@ -233,12 +232,12 @@ class RotateSingleJoint():
         group.set_max_acceleration_scaling_factor(0.1)
         group.set_max_velocity_scaling_factor(0.1)
         joint_goal = group.get_current_joint_values()
-        joint_goal[0] = -pi * 0.5
-        joint_goal[1] = -pi * 0.5
-        joint_goal[2] = -pi * 0.5
-        joint_goal[3] = -pi * 0.5
-        joint_goal[4] = pi * 0.5
-        joint_goal[5] = pi * 0.5    
+        joint_goal[0] = -math.pi * 0.5
+        joint_goal[1] = -math.pi * 0.5
+        joint_goal[2] = -math.pi * 0.5
+        joint_goal[3] = -math.pi * 0.5
+        joint_goal[4] =  math.pi * 0.5
+        joint_goal[5] =  math.pi * 0.5    
         group.go(joint_goal, wait=True)
         group.stop()
 
@@ -256,8 +255,8 @@ class RotateSingleJoint():
         curr_joints_radian = self.move_group.get_current_joint_values()
         curr_joints_degree = self.move_group.get_current_joint_values()
         for id in range(len(curr_joints_radian)):
-            prev_joints_degree[id]=prev_joints_radian[id]*(180.0/pi)
-            curr_joints_degree[id]=curr_joints_radian[id]*(180.0/pi)
+            prev_joints_degree[id]=prev_joints_radian[id]*(180.0/math.pi)
+            curr_joints_degree[id]=curr_joints_radian[id]*(180.0/math.pi)
         print("\033[33mprev_joints_degree:",', '.join('{:.4f}'.format(f) for f in prev_joints_degree))
         print("\033[33mcurr_joints_degree:",', '.join('{:.4f}'.format(f) for f in curr_joints_degree))
 
@@ -321,18 +320,18 @@ class RotateSingleJoint():
         
         joint_angles1 = self.compute_IK_from_rpy(self.robot_chain, pp, euler)
         if joint_angles1 is not None:
-            print("\033[33mjoint_angles1:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in joint_angles1))
+            print("\033[33mjoint_angles1:",', '.join('{:.4f}'.format(180.0*(f/math.pi)) for f in joint_angles1))
 
         joint_angles2 = self.compute_IK_from_quat(self.robot_chain, pp, rr)
         if joint_angles2 is not None:
-            print("\033[33mjoint_angles2:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in joint_angles2))
+            print("\033[33mjoint_angles2:",', '.join('{:.4f}'.format(180.0*(f/math.pi)) for f in joint_angles2))
 
         # [ur_ikfast]
         joint_angles = np.zeros(6) #np.random.uniform(-1*np.pi, 1*np.pi, size=6) #self.move_group.get_current_joint_values()
         pose_quat = [pp.x, pp.y, pp.z, rr.x, rr.y, rr.z, rr.w]
         joint_angles3 = self.ur5e_arm.inverse(pose_quat, False, q_guess=joint_angles)
         if joint_angles3 is not None:
-            print("\033[33mjoint_angles3:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in joint_angles3))
+            print("\033[33mjoint_angles3:",', '.join('{:.4f}'.format(180.0*(f/math.pi)) for f in joint_angles3))
 
         # [analytical solutions, geometric]
         # https://github.com/XinmaoLi/UR_kinematics_solver/tree/master
@@ -376,11 +375,11 @@ class RotateSingleJoint():
    
 
 
-        # print("\033[33mjoint_angles4:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in th_radian))
+        # print("\033[33mjoint_angles4:",', '.join('{:.4f}'.format(180.0*(f/math.pi)) for f in th_radian))
 
         # Gazebo, MoveIt Current Joint Value
         # actual_joint_angle = self.move_group.get_current_joint_values()
-        print("\033[33mactual_joints:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in actual_joint_angle))
+        print("\033[33mactual_joints:",', '.join('{:.4f}'.format(180.0*(f/math.pi)) for f in actual_joint_angle))
 
     def check_FK(self):
         print('\033[32m=========check_FK: joint --> pose=======')
@@ -390,7 +389,7 @@ class RotateSingleJoint():
         #========================
         # Gazebo, MoveIt
         curr_joints_radian = self.move_group.get_current_joint_values()
-        print("\033[33mcurr_joints_degree:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in curr_joints_radian))
+        print("\033[33mcurr_joints_degree:",', '.join('{:.4f}'.format(180.0*(f/math.pi)) for f in curr_joints_radian))
 
         # Gazebo, MoveIt Current Pose (world->ee_frame)
         pp = self.move_group.get_current_pose().pose.position       #<class 'geometry_msgs.msg._Point.Point'>
@@ -426,15 +425,15 @@ class RotateSingleJoint():
 
     def back_up(self):
         joint_goal = self.move_group.get_current_joint_values()
-        joint_goal[0] = ((-90+ 0)/180.0)*pi
-        joint_goal[1] = ((-90+ 0)/180.0)*pi 
-        joint_goal[2] = ((-90+ 0)/180.0)*pi
-        joint_goal[3] = ((-90+ 0)/180.0)*pi
-        joint_goal[4] = (( 90+ 0)/180.0)*pi
-        joint_goal[5] = (( 90+ 0)/180.0)*pi    
+        joint_goal[0] = ((-90+ 0)/180.0)*math.pi
+        joint_goal[1] = ((-90+ 0)/180.0)*math.pi 
+        joint_goal[2] = ((-90+ 0)/180.0)*math.pi
+        joint_goal[3] = ((-90+ 0)/180.0)*math.pi
+        joint_goal[4] = (( 90+ 0)/180.0)*math.pi
+        joint_goal[5] = (( 90+ 0)/180.0)*math.pi    
         self.move_group.go(joint_goal, wait=True)
         self.move_group.stop()
-        print("\033[33mjoint_goal:",', '.join('{:.4f}'.format(f*(180.0/pi)) for f in joint_goal))
+        print("\033[33mjoint_goal:",', '.join('{:.4f}'.format(f*(180.0/math.pi)) for f in joint_goal))
 
         # self.check_jacobian()
         # self.check_IK()
