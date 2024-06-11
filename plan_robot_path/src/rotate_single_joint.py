@@ -18,13 +18,15 @@ from geometry_msgs.msg import Pose, PoseStamped, TransformStamped
 import tf
 
 import sys
-
+np.set_printoptions(formatter={'float': '{: 0.10f}'.format})
 # Add the path to the Python library to sys.path
 library_path = "/home/user/upup/zMANIP/manip_metrics_ws/src/ur_ikfast"
 sys.path.append(library_path)
-# from ur_ikfast.ur_ikfast import ur_kinematics
 from ur_ikfast import ur_kinematics
 
+# library_path = "/home/fatfat/work/python-Universal-robot-kinematics"
+# sys.path.append(library_path)
+from universal_robot_kinematics import forKine, invKine
 
 epsilon = sys.float_info.epsilon
 # print("\033[33mThe value of epsilon is:", epsilon)
@@ -136,9 +138,6 @@ class RotateSingleJoint():
         
     def run_pose(self):
         self.back_up()
-        # self.check_jacobian()
-        # self.check_IK()
-        # self.check_FK()
         # self.back_home()
         # self.rotate_joint(4,-pi/4, pi/4)
         # self.pose()
@@ -242,14 +241,7 @@ class RotateSingleJoint():
         joint_goal[5] = pi * 0.5    
         group.go(joint_goal, wait=True)
         group.stop()
-    #     current_joints = group.get_current_joint_values()
-    #     origin_orientation =  group.get_current_pose().pose.orientation
-    #     origindegree =  euler_from_quaternion([origin_orientation.x, origin_orientation.y, origin_orientation.z, origin_orientation.w]) 
 
-        
-    #     self.origin_degree[0] = origindegree[0]/3.14*180.0
-    #     self.origin_degree[1] = origindegree[1]/3.14*180.0
-    #     self.origin_degree[2] = origindegree[2]/3.14*180.0
     #     return all_close(joint_goal, current_joints, 0.01)
         group.clear_pose_targets()
 
@@ -266,8 +258,8 @@ class RotateSingleJoint():
         for id in range(len(curr_joints_radian)):
             prev_joints_degree[id]=prev_joints_radian[id]*(180.0/pi)
             curr_joints_degree[id]=curr_joints_radian[id]*(180.0/pi)
-        print("\033[33mprev_joints_degree:",', '.join('{:.2f}'.format(f) for f in prev_joints_degree))
-        print("\033[33mcurr_joints_degree:",', '.join('{:.2f}'.format(f) for f in curr_joints_degree))
+        print("\033[33mprev_joints_degree:",', '.join('{:.4f}'.format(f) for f in prev_joints_degree))
+        print("\033[33mcurr_joints_degree:",', '.join('{:.4f}'.format(f) for f in curr_joints_degree))
 
         # [JacobianMatrix] Gazebo, MoveIt
         matrix = np.array(self.move_group.get_jacobian_matrix(curr_joints_radian))
@@ -282,103 +274,159 @@ class RotateSingleJoint():
         jac_mat = self.kdl_to_mat(jac)
         print("\033[33mJacobian matrix PyKDL:\n", jac_mat)
 
-        ellipsoid_1 = math.sqrt(np.linalg.det((matrix * matrix.transpose())))
-        ellipsoid_2 = math.sqrt(np.linalg.det((jac_mat * jac_mat.transpose())))
-        print("\033[33mellipsoid MoveIt: ", ellipsoid_1)
-        print("\033[33mellipsoid PyKDL : ", ellipsoid_2)
+        det1 = np.linalg.det(np.dot(matrix,  matrix.transpose()))
+        det2 = np.linalg.det(np.dot(jac_mat, jac_mat.transpose()))
+        if det1 < 0:
+            raise ValueError("The ellipsoid_1 determinant is negative, which should not happen for a product of a matrix and its transpose.")
+        else:
+            ellipsoid_1 = math.sqrt(det1)
+            print("\033[33mellipsoid MoveIt: ", ellipsoid_1)
+        if det2 < 0:
+            raise ValueError("The ellipsoid_2 determinant is negative, which should not happen for a product of a matrix and its transpose.")
+        else:
+            ellipsoid_2 = math.sqrt(det2)
+            print("\033[33mellipsoid PyKDL : ", ellipsoid_2)
     
     def check_IK(self):
-        print('\033[32m=========check_IK=======')
+        print('\033[32m=========check_IK: pose --> joint=======')
         #========================
         #   Check base_H_tool
         #   IK: pose --> joint
         #========================
         # Gazebo, MoveIt Current Joint Value
-        actual_joint_angle = self.move_group.get_current_joint_values()
+        actual_joint_angle = self.move_group.get_current_joint_values() #/base_link --> /tool0
         # Gazebo, MoveIt Current Pose (world->ee_frame)
         pp = self.move_group.get_current_pose().pose.position       #<class 'geometry_msgs.msg._Point.Point'>
         rr = self.move_group.get_current_pose().pose.orientation    #<class 'geometry_msgs.msg._Quaternion.Quaternion'>
         # print("\033[33mframd_id:", self.move_group.get_current_pose().header.frame_id) #world
-        print("\033[33mmoveit      trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+        print("\033[33mmoveit      trans: {:.6f}, {:.6f}, {:.6f}; rot: {:.6f}, {:.6f}, {:.6f},{:.6f}" \
                                 .format(pp.x, pp.y, pp.z, rr.x, rr.y, rr.z, rr.w))
 
         # tf_listener Current Pose
         # https://blog.csdn.net/qq_39779233/article/details/105478695 
         # now = rospy.Time.now() #specific time, rospy.Time(0) recent time
+        # /base or /base_link --> /tool0 差一個基座的旋轉
         self.tf_listener.waitForTransform("/base_link", "/tool0", rospy.Time(0), rospy.Duration(4.0))
         (trans,rot) = self.tf_listener.lookupTransform("/base_link", "/tool0", rospy.Time(0))
-        print("\033[33mtf_listener trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+        print("\033[33mtf_listener trans: {:.6f}, {:.6f}, {:.6f}; rot: {:.6f}, {:.6f}, {:.6f},{:.6f}" \
                                 .format(trans[0], trans[1], trans[2], rot[0], rot[1], rot[2], rot[3]))
 
 
         # tf_matrix = quaternion_matrix([rot[0], rot[1], rot[2], rot[3]]) #quaternion --> matrix
         # print("\033[33mtf_matrix:\n", tf_matrix)
 
-        # PyKDL
+        # [PyKDL]
         euler = tf.transformations.euler_from_quaternion((rr.x, rr.y, rr.z, rr.w))
         # roll, pitch, yaw = euler[0], euler[1], euler[2]
         
         joint_angles1 = self.compute_IK_from_rpy(self.robot_chain, pp, euler)
         if joint_angles1 is not None:
-            print("\033[33mjoint_angles1:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles1))
+            print("\033[33mjoint_angles1:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in joint_angles1))
 
         joint_angles2 = self.compute_IK_from_quat(self.robot_chain, pp, rr)
         if joint_angles2 is not None:
-            print("\033[33mjoint_angles2:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles2))
+            print("\033[33mjoint_angles2:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in joint_angles2))
 
-        # ur_ikfast
-        joint_angles = np.zeros(6) 
-        # joint_angles = np.random.uniform(-1*np.pi, 1*np.pi, size=6)
-        # joint_angles = self.move_group.get_current_joint_values()
+        # [ur_ikfast]
+        joint_angles = np.zeros(6) #np.random.uniform(-1*np.pi, 1*np.pi, size=6) #self.move_group.get_current_joint_values()
         pose_quat = [pp.x, pp.y, pp.z, rr.x, rr.y, rr.z, rr.w]
         joint_angles3 = self.ur5e_arm.inverse(pose_quat, False, q_guess=joint_angles)
         if joint_angles3 is not None:
-            print("\033[33mjoint_angles3:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in joint_angles3))
+            print("\033[33mjoint_angles3:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in joint_angles3))
+
+        # [analytical solutions, geometric]
+        # https://github.com/XinmaoLi/UR_kinematics_solver/tree/master
+        # https://github.com/mc-capolei/python-Universal-robot-kinematics/blob/master/universal_robot_kinematics.py
+        # position   = [T06[0,3], T06[1,3], T06[2,3]]
+        # quaternion = [quat[0], quat[1], quat[2], quat[3]]
+
+        # pos, quat --> 4x4 matrix 
+        T06_desired = tf.transformations.quaternion_matrix([rr.x, rr.y, rr.z, rr.w])
+        T06_desired[0, 3] = trans[0]
+        T06_desired[1, 3] = trans[1]
+        T06_desired[2, 3] = trans[2]
+        th_radian = invKine(T06_desired)
+
+        num_joints, num_ans = th_radian.shape
+        print("Total {} possible joint configuration.".format(num_ans))
+        for i in range(num_ans):
+            theta1, theta2, theta3 = th_radian[0,i], th_radian[1,i], th_radian[2,i]
+            theta4, theta5, theta6 = th_radian[3,i], th_radian[4,i], th_radian[5,i]
+            th = np.matrix([[theta1], [theta2], [theta3], [theta4], [theta5], [theta6]])
+            c = [0]
+            T01, T02, T03, T04, T05, T06 = forKine(th,c)
+            # print("ans", i, "\033[33mjoint_angles4:",', '.join('{:.4f}'.format(180.0*(th[id,0]/math.pi)) for id in range(6)))
+            
+            joint_angles_array = PyKDL.JntArray(num_joints)
+            for idx in range(num_joints):
+                joint_angles_array[idx] = th_radian[idx, i]
+
+            jac_mmm = self.calculateJacobian(self.robot_chain, joint_angles_array)
+            jac_mat_mmm = self.kdl_to_mat(jac_mmm)
+            det3 = np.linalg.det(np.dot(jac_mat_mmm, jac_mat_mmm.transpose()))
+
+            if det3 < 0:
+                ellipsoid_3 = 0   
+                print("The ellipsoid_3 determinant is negative")
+                # raise ValueError("The ellipsoid_3 determinant is negative, which should not happen for a product of a matrix and its transpose.")
+            else:
+                ellipsoid_3 = math.sqrt(det3)
+                # print("\033[33mellipsoid analytic : ", ellipsoid_3)
+            print("ans", i, ellipsoid_3,"\033[33mjoint_angles4:",', '.join('{:.4f}'.format(180.0*(th[id,0]/math.pi)) for id in range(6)))
+   
+
+
+        # print("\033[33mjoint_angles4:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in th_radian))
 
         # Gazebo, MoveIt Current Joint Value
         # actual_joint_angle = self.move_group.get_current_joint_values()
-        print("\033[33mactual_joints:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in actual_joint_angle))
+        print("\033[33mactual_joints:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in actual_joint_angle))
 
     def check_FK(self):
-        print('\033[32m=========check_FK=======')
+        print('\033[32m=========check_FK: joint --> pose=======')
         #========================
         #   Check base_H_tool
         #   FK: joint --> pose
         #========================
         # Gazebo, MoveIt
         curr_joints_radian = self.move_group.get_current_joint_values()
-        print("\033[33mcurr_joints_degree:",', '.join('{:.2f}'.format(180.0*(f/pi)) for f in curr_joints_radian))
+        print("\033[33mcurr_joints_degree:",', '.join('{:.4f}'.format(180.0*(f/pi)) for f in curr_joints_radian))
 
         # Gazebo, MoveIt Current Pose (world->ee_frame)
         pp = self.move_group.get_current_pose().pose.position       #<class 'geometry_msgs.msg._Point.Point'>
         rr = self.move_group.get_current_pose().pose.orientation    #<class 'geometry_msgs.msg._Quaternion.Quaternion'>
         # print("\033[33mframd_id:", self.move_group.get_current_pose().header.frame_id) #world
-        print("\033[33mmoveit trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+        print("\033[33mmoveit trans: {:.6f}, {:.6f}, {:.6f}; rot: {:.6f}, {:.6f}, {:.6f},{:.6f}" \
                                 .format(pp.x, pp.y, pp.z, rr.x, rr.y, rr.z, rr.w))
 
         # PyKDL
         pos, quat = self.compute_FK_from_joint(self.robot_chain, curr_joints_radian)
-        print("\033[33mPyKDL  trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+        print("\033[33mPyKDL  trans: {:.6f}, {:.6f}, {:.6f}; rot: {:.6f}, {:.6f}, {:.6f},{:.6f}" \
                                 .format(pos.x(), pos.y(), pos.z(), quat[0], quat[1], quat[2], quat[3]))
         
         # ur_ikfast
         pose_quat = self.ur5e_arm.forward(curr_joints_radian)
         pose_matrix = self.ur5e_arm.forward(curr_joints_radian, 'matrix')
-        print("\033[33mikfast trans: {:.4f}, {:.4f}, {:.4f};\trot: {:.4f}, {:.4f}, {:.4f},{:.4f}" \
+        print("\033[33mikfast trans: {:.6f}, {:.6f}, {:.6f}; rot: {:.6f}, {:.6f}, {:.6f},{:.6f}" \
                                 .format(pose_quat[0], pose_quat[1], pose_quat[2], pose_quat[3], pose_quat[4], pose_quat[5], pose_quat[6]))
         # print("forward() quaternion \n", pose_quat)
         # print("forward() matrix \n", pose_matrix)
 
+        # analytical solutions, geometric
+        th = np.matrix([[curr_joints_radian[0]], [curr_joints_radian[1]], 
+                        [curr_joints_radian[2]], [curr_joints_radian[3]],
+                        [curr_joints_radian[4]], [curr_joints_radian[5]]])
+        c = [0]
+        T01, T02, T03, T04, T05, T06 = forKine(th,c)
+        quat = tf.transformations.quaternion_from_matrix(T06)
+        print("\033[33mT06    trans: {:.6f}, {:.6f}, {:.6f}; rot: {:.6f}, {:.6f}, {:.6f},{:.6f}" \
+                                .format(T06[0,3], T06[1,3], T06[2,3], quat[0], quat[1], quat[2], quat[3]))
+
+
+
     def back_up(self):
         joint_goal = self.move_group.get_current_joint_values()
-        # joint_goal[0] = -pi * 0.5+(45.0/180.0)*3.14
-        # joint_goal[1] = 0#-pi * 0.5
-        # joint_goal[2] = (-pi * 0.5)+(70.0/180.0)*3.14
-        # joint_goal[3] = -pi * 0.5
-        # joint_goal[4] = pi * 0.5
-        # joint_goal[5] = pi * 0.5    
-
-        joint_goal[0] = ((-90+45)/180.0)*pi
+        joint_goal[0] = ((-90+ 0)/180.0)*pi
         joint_goal[1] = ((-90+ 0)/180.0)*pi 
         joint_goal[2] = ((-90+ 0)/180.0)*pi
         joint_goal[3] = ((-90+ 0)/180.0)*pi
@@ -386,10 +434,10 @@ class RotateSingleJoint():
         joint_goal[5] = (( 90+ 0)/180.0)*pi    
         self.move_group.go(joint_goal, wait=True)
         self.move_group.stop()
-        print("\033[33mjoint_goal:",', '.join('{:.2f}'.format(f*(180.0/pi)) for f in joint_goal))
+        print("\033[33mjoint_goal:",', '.join('{:.4f}'.format(f*(180.0/pi)) for f in joint_goal))
 
-        self.check_jacobian()
-        self.check_IK()
+        # self.check_jacobian()
+        # self.check_IK()
         self.check_FK()
 
     def back_home(self):
@@ -447,7 +495,8 @@ class RotateSingleJoint():
         chain = PyKDL.Chain()
         dh_params = [
             # a,       alpha,        d,     theta
-            (0.0,      0.5*math.pi,  0.089159, math.pi),
+            # (0.0,      0.5*math.pi,  0.089159, 0.0),   #/base
+            (0.0,      0.5*math.pi,  0.089159, math.pi), #/base_link
             (-0.42500, 0.0,          0.0,      0.0),
             (-0.39225, 0.0,          0.0,      0.0),
             (0.0,      0.5*math.pi,  0.10915,  0.0),
@@ -505,7 +554,8 @@ class RotateSingleJoint():
         chain = PyKDL.Chain()
         dh_params = [
             # a,       alpha,        d,     theta
-            (0.0,      0.5*math.pi,  0.163, math.pi),
+            # (0.0,      0.5*math.pi,  0.163, 0.0),   #/base
+            (0.0,      0.5*math.pi,  0.163, math.pi), #/base_link
             (-0.425,   0.0,          0.0,   0.0),
             (-0.39225, 0.0,          0.0,   0.0),
             (0.0,      0.5*math.pi,  0.134, 0.0),
@@ -603,8 +653,8 @@ class RotateSingleJoint():
         initial_joint_angles[1]=-math.pi/2.0
         initial_joint_angles[2]=-math.pi/2.0
         initial_joint_angles[3]=-math.pi/2.0
-        initial_joint_angles[4]=math.pi/2.0
-        initial_joint_angles[5]=math.pi/2.0
+        initial_joint_angles[4]= math.pi/2.0
+        initial_joint_angles[5]= math.pi/2.0
         joint_angles = PyKDL.JntArray(chain.getNrOfJoints())
         # print("initial_joint_angles", initial_joint_angles)
         
