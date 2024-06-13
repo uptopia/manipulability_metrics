@@ -25,7 +25,8 @@
         <include file="$(find ur5e_moveit_config)/launch/moveit_rviz.launch"/>
     </group>
 
-    <node name="check_methods" pkg="plan_robot_path" type="check_methods.py" output="screen" respawn="true">
+    <!-- <node name="check_methods" pkg="plan_robot_path" type="check_methods.py" output="screen" respawn="true"> -->
+    <node name="rotate_one_joint" pkg="plan_robot_path" type="rotate_one_joint.py" output="screen" respawn="true">
         <param name="robot_name" value="$(arg robot_name)" />
         <param name="group_name" value="$(arg group_name)" />
         <param name="base_frame" value="$(arg base_frame)" />
