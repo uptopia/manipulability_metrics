@@ -18,7 +18,7 @@ docker run --rm \
     -v /etc/timezone:/etc/timezone:ro \
     -v /etc/localtime:/etc/localtime:ro \
     -v /dev:/dev \
-    -v ${WS_PATH}/..:/home/${user}/work \
+    -v ${WS_PATH}:/home/${user}/work \
     -it --name "${CONTAINER}" "${DOCKER_HUB_USER}"/"${IMAGE}"
     #-it --name manip_metric "${DOCKER_HUB_USER}"/"${IMAGE}"
     #-it --name "${CONTAINER}" "${DOCKER_HUB_USER}"/"${IMAGE}"
