@@ -1,4 +1,4 @@
-robot_moveit/ur5_moveit_config/launch/moveit_planning_execution.launch<launch>
+<launch>
 
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
