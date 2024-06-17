@@ -8,17 +8,17 @@
     <arg name="base_frame"   default="base_link"/>
     <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
-    <!-- UR5 config & MoveIt-->
+    <!-- UR5 config & MoveIt (group_name: ur5)-->
     <!-- <include file="$(find cam_ur5_moveit_config)/launch/demo.launch" />
 
-    <arg name="group_name"   default="ur5"/>
+    <arg name="group_name"   default="manipulator"/>
     <arg name="base_frame"   default="base_link"/>
     <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
     <!-- UR5e config & MoveIt-->
     <include file="$(find cam_ur5e_moveit_config)/launch/demo.launch" />
 
-    <arg name="group_name"   default="ur5e"/>
+    <arg name="group_name"   default="manipulator"/>
     <arg name="base_frame"   default="base_link"/>
     <arg name="cam_frame"    default="camera_color_optical_frame"/>
 
