@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<robot name="belt10mm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find belt10mm_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find belt10mm_description)/urdf/belt10mm.trans" />
+<xacro:include filename="$(find belt10mm_description)/urdf/belt10mm.gazebo" />
+<link name="base_link">
+  <inertial>
+    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+    <mass value="0.36994978396933326"/>
+    <inertia ixx="0.001693" iyy="0.003381" izz="0.001693" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://belt10mm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://belt10mm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+</robot>
