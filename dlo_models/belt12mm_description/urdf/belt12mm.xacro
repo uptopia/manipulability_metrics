@@ -1,28 +1,32 @@
 <?xml version="1.0" ?>
-<robot name="belt12mm" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:include filename="$(find belt12mm_description)/urdf/materials.xacro" />
-<xacro:include filename="$(find belt12mm_description)/urdf/belt12mm.trans" />
-<xacro:include filename="$(find belt12mm_description)/urdf/belt12mm.gazebo" />
-<link name="base_link">
-  <inertial>
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-    <mass value="0.5327276889158392"/>
-    <inertia ixx="0.002441" iyy="0.004873" izz="0.002441" ixy="0.0" iyz="0.0" ixz="0.0"/>
-  </inertial>
-  <visual>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://belt12mm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="silver"/>
-  </visual>
-  <collision>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://belt12mm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
+<robot name="belt12mm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Includes -->
+  <xacro:include filename="$(find belt12mm_description)/urdf/materials.xacro" />
+  <xacro:include filename="$(find belt12mm_description)/urdf/belt12mm.trans" />
+  <xacro:include filename="$(find belt12mm_description)/urdf/belt12mm.gazebo" />
+
+  <xacro:macro name="belt12mm" params="parent *origin prefix">
+    <link name="${prefix}base_link">
+      <inertial>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <mass value="0.5327276889158392"/>
+        <inertia ixx="0.002441" iyy="0.004873" izz="0.002441" ixy="0.0" iyz="0.0" ixz="0.0"/>
+      </inertial>
+      <visual>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://belt12mm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="orange"/>
+      </visual>
+      <collision>
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://belt12mm_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
 
 </robot>
