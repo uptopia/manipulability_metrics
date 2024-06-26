@@ -32,13 +32,13 @@
 
   <!--Robot description and related parameter files -->
   <arg name="robot_description_file" default="$(dirname)/inc/load_cam_ur5e.launch.xml" doc="Launch file which populates the 'robot_description' parameter."/>
-  <arg name="joint_limit_params" default="$(find ur_description)/config/ur5/joint_limits.yaml"/>
-  <arg name="kinematics_params" default="$(find ur_description)/config/ur5/default_kinematics.yaml"/>
-  <arg name="physical_params" default="$(find ur_description)/config/ur5/physical_parameters.yaml"/>
-  <arg name="visual_params" default="$(find ur_description)/config/ur5/visual_parameters.yaml"/>
+  <arg name="joint_limit_params" default="$(find ur_description)/config/ur5e/joint_limits.yaml"/>
+  <arg name="kinematics_params" default="$(find ur_description)/config/ur5e/default_kinematics.yaml"/>
+  <arg name="physical_params" default="$(find ur_description)/config/ur5e/physical_parameters.yaml"/>
+  <arg name="visual_params" default="$(find ur_description)/config/ur5e/visual_parameters.yaml"/>
 
   <!-- Controller configuration -->
-  <arg name="controller_config_file" default="$(find ur_gazebo)/config/ur5_controllers.yaml" doc="Config file used for defining the ROS-Control controllers."/>
+  <arg name="controller_config_file" default="$(find ur_gazebo)/config/ur5e_controllers.yaml" doc="Config file used for defining the ROS-Control controllers."/>
   <arg name="controllers" default="joint_state_controller eff_joint_traj_controller" doc="Controllers that are activated by default."/>
   <arg name="stopped_controllers" default="joint_group_eff_controller" doc="Controllers that are initally loaded, but not started."/>
 
