@@ -10,4 +10,6 @@ echo "ros_ip:    ${ros_ip}"
 
 echo "export ROS_MASTER_URI=http://${master_ip}:11311" >> ~/.bashrc
 echo "export ROS_IP=${ros_ip}" >> ~/.bashrc
+echo "export GAZEBO_MODEL_PATH=$HOME/.gazebo/models" >> ~/.bashrc
 source ~/.bashrc
+
