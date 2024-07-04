@@ -8,43 +8,38 @@ and then modified.
 License: Apache 2.0. See LICENSE file in root directory.
 Copyright(c) 2017 PAL Robotics, S.L. All Rights Reserved
 
-This is the Gazebo URDF model for the Intel RealSense D435i camera
+This is the Gazebo URDF model for the Intel RealSense D435 camera
 -->
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:macro name="gazebo_d435i" params=" camera_name:=camera
-                                            topics_ns:=camera
-                                            reference_link
+  <xacro:macro name="gazebo_d435" params="reference_link
+                                          camera_name:=camera
+                                          topics_ns:=camera
 
-                                            depth_optical_frame
-                                            depth_width:=1280
-                                            depth_height:=720
-                                            depth_fps:=30
+                                          depth_optical_frame
+                                          color_optical_frame
+                                          infrared1_optical_frame
+                                          infrared2_optical_frame
 
-                                            color_optical_frame
-                                            color_width:=1920
-                                            color_height:=1080
-                                            color_fps:=30
-                                            visualize_color:=false
+                                          clip_distance_z_min:=0.1
+                                          clip_distance_z_max:=-1.0
+                                          depth_width:=1280
+                                          depth_height:=720
+                                          depth_fps:=30
 
-                                            infrared1_optical_frame
-                                            infrared2_optical_frame
-                                            infra_width:=640
-                                            infra_height:=480
-                                            infra_fps:=30     
+                                          color_width:=1920
+                                          color_height:=1080
+                                          color_fps:=30
 
-                                            accel_optical_frame
-                                            gyro_optical_frame
-                                            accel_fps:=250
-                                            gyro_fps:=400
+                                          infra_width:=640
+                                          infra_height:=480
+                                          infra_fps:=30
 
-                                            enable_pointCloud:=false
-                                            unite_imu_method:=false
-                                            clip_distance_z_min:=0.1
-                                            clip_distance_z_max:=-1.0
-                                            align_depth:=false                            
-                                            ">
+                                          align_depth:=false
+                                          enable_pointCloud:=false
+                                          visualize:=false
+                                          ">
 
     <!-- Load parameters to model's main link-->
     <xacro:property name="deg_to_rad" value="0.01745329251994329577"/>
@@ -62,8 +57,6 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
       <kd>1</kd>
       <!--<max_vel>0.01</max_vel>
       <min_depth>0</min_depth>-->
-
-      <!-- Color -->
       <sensor name="${camera_name}color" type="camera">
         <camera name="${camera_name}">
           <horizontal_fov>${69.4*deg_to_rad}</horizontal_fov>
@@ -84,9 +77,8 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
         </camera>
         <always_on>1</always_on>
         <update_rate>${color_fps}</update_rate>
-        <visualize>${visualize_color}</visualize>
+        <visualize>${visualize}</visualize>
       </sensor>
-      <!-- InfarRed1 -->
       <sensor name="${camera_name}ired1" type="camera">
         <camera name="${camera_name}">
           <horizontal_fov>${85.2*deg_to_rad}</horizontal_fov>
@@ -109,7 +101,6 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
         <update_rate>${infra_fps}</update_rate>
         <visualize>false</visualize>
       </sensor>
-      <!-- InfarRed2 -->
       <sensor name="${camera_name}ired2" type="camera">
         <camera name="${camera_name}">
           <horizontal_fov>${85.2*deg_to_rad}</horizontal_fov>
@@ -132,7 +123,6 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
         <update_rate>${infra_fps}</update_rate>
         <visualize>false</visualize>
       </sensor>
-      <!-- Depth -->
       <sensor name="${camera_name}depth" type="depth">
         <camera name="${camera_name}">
           <!-- align-depth settings -->
@@ -152,11 +142,11 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
           </xacro:if>
           <clip>
             <near>0.1</near>
-            <xacro:unless value="${clip_distance_z_max > 0.0}">
+            <xacro:unless value="${clip_distance_z_m > 0.0}">
               <far>100</far>
             </xacro:unless>
-            <xacro:if value="${clip_distance_z_max > 0.0}">
-              <far>${clip_distance_z_max}</far>
+            <xacro:if value="${clip_distance_z_m > 0.0}">
+              <far>${clip_distance_z_m}</far>
             </xacro:if>
           </clip>
           <noise>
@@ -174,60 +164,8 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
         </xacro:if>
         <visualize>false</visualize>
       </sensor>
-      <!-- IMU -->
-      <xacro:if value="${unite_imu_method == 'copy' or unite_imu_method == 'linear_interpolation'}">
-        <sensor name="${camera_name}imu" type="imu">
-          <always_on>true</always_on>
-          <update_rate>${gyro_fps}</update_rate>
-          <topic>${camera_name}/imu/sample</topic>
-          <plugin name="{camera_name}imu" filename="libgazebo_ros_imu_sensor.so">
-            <topicName>${camera_name}/imu/sample</topicName>
-            <bodyName>${camera_name}_link</bodyName>
-            <frameName>${gyro_optical_frame}</frameName>
-            <updateRateHZ>${gyro_fps}</updateRateHZ>
-            <gaussianNoise>0.1</gaussianNoise>
-            <xyzOffset>0 0 0</xyzOffset>
-            <rpyOffset>0 0 0</rpyOffset>
-          </plugin>
-        </sensor>
-      </xacro:if>
-      <!-- Accel and gyro -->
-      <xacro:unless value="${unite_imu_method == 'copy' or unite_imu_method == 'linear_interpolation'}">
-        <sensor name="{camera_name}accel" type="imu">
-          <always_on>true</always_on>
-          <update_rate>${accel_fps}</update_rate>
-          <topic>${camera_name}/accel/sample</topic>
-          <plugin name="${topics_ns}_accel_plugin" filename="librealsense_gazebo_accel_sensor.so">
-            <topicName>${camera_name}/accel/sample</topicName>
-            <bodyName>${camera_name}_link</bodyName>
-            <updateRateHZ>${accel_fps}</updateRateHZ>
-            <gaussianNoise>0.1</gaussianNoise>
-            <xyzOffset>0 0 0</xyzOffset>
-            <rpyOffset>0 0 0</rpyOffset>
-            <frameName>${accel_optical_frame}</frameName>
-            <initialOrientationAsReference>false</initialOrientationAsReference>
-          </plugin>
-          <pose>0 0 0 0 0 0</pose>
-        </sensor>
-        <sensor name="{camera_name}gyro" type="imu">
-          <always_on>true</always_on>
-          <update_rate>${gyro_fps}</update_rate>
-          <topic>${camera_name}/gyro/sample</topic>
-          <plugin name="${topics_ns}_gyro_plugin" filename="librealsense_gazebo_gyro_sensor.so">
-            <topicName>${camera_name}/gyro/sample</topicName>
-            <bodyName>${camera_name}_link</bodyName>
-            <updateRateHZ>${gyro_fps}</updateRateHZ>
-            <gaussianNoise>0.1</gaussianNoise>
-            <xyzOffset>0 0 0</xyzOffset>
-            <rpyOffset>0 0 0</rpyOffset>
-            <frameName>${gyro_optical_frame}</frameName>
-            <initialOrientationAsReference>false</initialOrientationAsReference>
-          </plugin>
-        </sensor>
-      </xacro:unless>
     </gazebo>
 
-    <!-- Load plugin to the model ("robot" in urdf format)-->
     <gazebo>
       <plugin name="${topics_ns}" filename="librealsense_gazebo_plugin.so">
         <prefix>${camera_name}</prefix>
@@ -249,11 +187,11 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
 
         <!-- Depth camera settings -->
       	<rangeMinDepth>0.2</rangeMinDepth>
-        <xacro:unless value="${clip_distance_z_max > 0.0}">
+        <xacro:unless value="${clip_distance_z_m > 0.0}">
       	  <rangeMaxDepth>10.0</rangeMaxDepth>
         </xacro:unless>
-        <xacro:if value="${clip_distance_z_max > 0.0}">
-          <rangeMaxDepth>${clip_distance_z_max}</rangeMaxDepth>
+        <xacro:if value="${clip_distance_z_m > 0.0}">
+          <rangeMaxDepth>${clip_distance_z_m}</rangeMaxDepth>
         </xacro:if>
         <xacro:unless value="${align_depth}">
         	<depthUpdateRate>${depth_fps}</depthUpdateRate>
@@ -270,10 +208,8 @@ This is the Gazebo URDF model for the Intel RealSense D435i camera
 
         <!-- Pointlcloud settings -->
       	<pointCloud>${enable_pointCloud}</pointCloud>
-        <pointCloudTopicName>depth_registered/points</pointCloudTopicName>
-        <!-- <pointCloudTopicName>depth/color/points</pointCloudTopicName> -->
-        <!-- <pointCloudTopicName>/camera/depth_registered/points</pointCloudTopicName> -->
-        <pointCloudCutoff>0.1</pointCloudCutoff>
+      	<pointCloudTopicName>depth/color/points</pointCloudTopicName>
+      	<pointCloudCutoff>0.5</pointCloudCutoff>
 
       </plugin>
     </gazebo>

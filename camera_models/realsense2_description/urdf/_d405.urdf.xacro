@@ -41,7 +41,8 @@ aluminum peripherial evaluation case.
                                           infra_height:=480
                                           infra_fps:=30
 
-                                          clip_distance:=-1.0
+                                          clip_distance_z_min:=0.1
+                                          clip_distance_z_max:=-1.0
                                           depth_width:=1280
                                           depth_height:=720
                                           depth_fps:=30
@@ -50,7 +51,7 @@ aluminum peripherial evaluation case.
                                           enable_pointCloud:=false
 
                                           *origin">
-    <xacro:arg name="add_plug" default="false" />
+    <!-- <xacro:arg name="add_plug" default="false" /> -->
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
     <!-- The following values are approximate, and the camera node
@@ -180,11 +181,11 @@ aluminum peripherial evaluation case.
     </xacro:if>
     
     <!-- usb_plug -->
-    <xacro:if value="$(arg add_plug)">
+    <!-- <xacro:if value="$(arg add_plug)">
       <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
         <origin xyz="${-0.00153-d405_mesh_x_offset} ${d405_cam_width/2-d405_cam_depth_py} 0" rpy="${M_PI} 0 0"/>
       </xacro:usb_plug>
-    </xacro:if>
+    </xacro:if> -->
 
     <!-- Realsense Gazebo Plugin -->
     <xacro:gazebo_d405 camera_name="${name}"
@@ -209,7 +210,8 @@ aluminum peripherial evaluation case.
                         infra_fps="${infra_fps}"
 
                         enable_pointCloud="${enable_pointCloud}"
-                        clip_distance="${clip_distance}"
+                        clip_distance_z_min="${clip_distance_z_min}"
+                        clip_distance_z_max="${clip_distance_z_max}"
                         align_depth="${align_depth}"
     />
   </xacro:macro>

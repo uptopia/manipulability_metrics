@@ -31,7 +31,8 @@ This is the URDF model for the Intel RealSense d405 camera
                                            infra_fps:= 60
 
                                            enable_pointCloud:=false
-                                           clip_distance:=0.1
+                                           clip_distance_z_min:=0.1
+                                           clip_distance_z_max:=-0.1
                                            align_depth:=false
                                            ">
 
@@ -76,9 +77,9 @@ This is the URDF model for the Intel RealSense d405 camera
     <xacro:property name="depth_height" value="720"/>
     <xacro:property name="depth_width" value="1280"/>
     
-    <!-- clip_distance -->
-    <xacro:property name="min_z" value="0.1"/>
-    <xacro:property name="max_z" value="0.5"/>
+    <!-- clip_distance_z -->
+    <!-- <xacro:property name="clip_distance_z_min" value="0.1"/>
+    <xacro:property name="clip_distance_z_max" value="0.5"/> -->
 
     <!-- Load parameters to model's main link-->
     <gazebo reference="${camera_name}_link">
@@ -168,14 +169,29 @@ This is the URDF model for the Intel RealSense d405 camera
       <sensor name="${camera_name}depth" type="depth">
         <pose frame="">0 0 0 0 0 0</pose>
         <camera name="${camera_name}">
-          <horizontal_fov>${depth_fov}</horizontal_fov>
-          <image>
-            <width>${depth_width}</width>
-            <height>${depth_height}</height>
-          </image>
+          <!-- align-depth settings -->
+          <xacro:unless value="${align_depth}">
+            <horizontal_fov>${depth_fov}</horizontal_fov>
+            <image>
+              <width>${depth_width}</width>
+              <height>${depth_height}</height>
+            </image>
+          </xacro:unless>
+          <xacro:if value="${align_depth}">
+            <horizontal_fov>${color_fov}</horizontal_fov>
+            <image>
+              <width>${color_width}</width>
+              <height>${color_height}</height>
+            </image>
+          </xacro:if>
           <clip>
-            <near>${min_z}</near>
-            <far>${max_z}</far>
+            <near>${clip_distance_z_min}</near>
+            <xacro:unless value="${clip_distance_z_max > 0.0}">
+              <far>100</far>
+            </xacro:unless>
+            <xacro:if value="${clip_distance_z_max > 0.0}">
+              <far>${clip_distance_z_max}</far>
+            </xacro:if>
           </clip>
           <noise>
             <type>gaussian</type>
@@ -218,7 +234,12 @@ This is the URDF model for the Intel RealSense d405 camera
         <!-- Depth camera settings -->
         <depthUpdateRate>${depth_fps}</depthUpdateRate>
         <rangeMinDepth>0.2</rangeMinDepth>
-        <rangeMaxDepth>10.0</rangeMaxDepth>
+        <xacro:unless value="${clip_distance_z_max > 0.0}">
+          <rangeMaxDepth>10.0</rangeMaxDepth>
+        </xacro:unless>
+        <xacro:if value="${clip_distance_z_max > 0.0}">
+          <rangeMaxDepth>${clip_distance_z_max}</rangeMaxDepth>
+        </xacro:if>
         <xacro:unless value="${align_depth}">
         	<depthUpdateRate>${depth_fps}</depthUpdateRate>
       	  <depthTopicName>depth/image_rect_raw</depthTopicName>
@@ -240,7 +261,7 @@ This is the URDF model for the Intel RealSense d405 camera
         <pointCloudTopicName>depth_registered/points</pointCloudTopicName>
         <!-- <pointCloudTopicName>depth/color/points</pointCloudTopicName> -->
         <!-- <pointCloudTopicName>/camera/depth_registered/points</pointCloudTopicName> -->
-        <pointCloudCutoff>0.5</pointCloudCutoff>
+        <pointCloudCutoff>0.1</pointCloudCutoff>
 
       </plugin>
     </gazebo>

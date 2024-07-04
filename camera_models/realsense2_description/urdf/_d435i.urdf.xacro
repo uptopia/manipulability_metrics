@@ -17,6 +17,7 @@ aluminum peripherial evaluation case.
   <xacro:include filename="$(find realsense_gazebo_description)/urdf/_d435i.gazebo.xacro"/>
 
   <xacro:macro name="sensor_d435i" params="parent
+                                          use_nominal_extrinsics:=false
                                           name:=camera
                                           topics_ns:=camera
 
@@ -29,7 +30,8 @@ aluminum peripherial evaluation case.
                                           infra_height:=480
                                           infra_fps:=30
 
-                                          clip_distance:=-1.0
+                                          clip_distance_z_min:=0.1
+                                          clip_distance_z_max:=-1.0
                                           depth_width:=1280
                                           depth_height:=720
                                           depth_fps:=30
@@ -105,95 +107,98 @@ aluminum peripherial evaluation case.
       </inertial>
     </link>
 
-    <!-- camera depth joints and links -->
-    <joint name="${name}_depth_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <parent link="${name}_link"/>
-      <child link="${name}_depth_frame"/>
-    </joint>
-    <link name="${name}_depth_frame"/>
+    <!-- Use the nominal extrinsics between camera frames if the calibrated extrinsics aren't being published. e.g. running the device in simulation  -->
+    <xacro:if value="${use_nominal_extrinsics}">
+      <!-- camera depth joints and links -->
+      <joint name="${name}_depth_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="${name}_link"/>
+        <child link="${name}_depth_frame"/>
+      </joint>
+      <link name="${name}_depth_frame"/>
 
-    <joint name="${name}_depth_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
-      <parent link="${name}_depth_frame"/>
-      <child link="${name}_depth_optical_frame"/>
-    </joint>
-    <link name="${name}_depth_optical_frame"/>
+      <joint name="${name}_depth_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+        <parent link="${name}_depth_frame"/>
+        <child link="${name}_depth_optical_frame"/>
+      </joint>
+      <link name="${name}_depth_optical_frame"/>
 
-    <!-- camera left IR joints and links -->
-    <joint name="${name}_left_ir_joint" type="fixed">
-      <origin xyz="0 ${d435i_cam_depth_to_left_ir_offset} 0" rpy="0 0 0"/>
-      <parent link="${name}_depth_frame"/>
-      <child link="${name}_left_ir_frame"/>
-    </joint>
-    <link name="${name}_left_ir_frame"/>
+      <!-- camera left IR joints and links -->
+      <joint name="${name}_left_ir_joint" type="fixed">
+        <origin xyz="0 ${d435i_cam_depth_to_left_ir_offset} 0" rpy="0 0 0"/>
+        <parent link="${name}_depth_frame"/>
+        <child link="${name}_left_ir_frame"/>
+      </joint>
+      <link name="${name}_left_ir_frame"/>
 
-    <joint name="${name}_left_ir_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
-      <parent link="${name}_left_ir_frame"/>
-      <child link="${name}_left_ir_optical_frame"/>
-    </joint>
-    <link name="${name}_left_ir_optical_frame"/>
+      <joint name="${name}_left_ir_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+        <parent link="${name}_left_ir_frame"/>
+        <child link="${name}_left_ir_optical_frame"/>
+      </joint>
+      <link name="${name}_left_ir_optical_frame"/>
 
-    <!-- camera right IR joints and links -->
-    <joint name="${name}_right_ir_joint" type="fixed">
-      <origin xyz="0 ${d435i_cam_depth_to_right_ir_offset} 0" rpy="0 0 0"/>
-      <parent link="${name}_depth_frame"/>
-      <child link="${name}_right_ir_frame"/>
-    </joint>
-    <link name="${name}_right_ir_frame"/>
+      <!-- camera right IR joints and links -->
+      <joint name="${name}_right_ir_joint" type="fixed">
+        <origin xyz="0 ${d435i_cam_depth_to_right_ir_offset} 0" rpy="0 0 0"/>
+        <parent link="${name}_depth_frame"/>
+        <child link="${name}_right_ir_frame"/>
+      </joint>
+      <link name="${name}_right_ir_frame"/>
 
-    <joint name="${name}_right_ir_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
-      <parent link="${name}_right_ir_frame"/>
-      <child link="${name}_right_ir_optical_frame"/>
-    </joint>
-    <link name="${name}_right_ir_optical_frame"/>
+      <joint name="${name}_right_ir_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+        <parent link="${name}_right_ir_frame"/>
+        <child link="${name}_right_ir_optical_frame"/>
+      </joint>
+      <link name="${name}_right_ir_optical_frame"/>
 
-    <!-- camera color joints and links -->
-    <joint name="${name}_color_joint" type="fixed">
-      <origin xyz="0 ${d435i_cam_depth_to_color_offset} 0" rpy="0 0 0"/>
-      <parent link="${name}_depth_frame"/>
-      <child link="${name}_color_frame"/>
-    </joint>
-    <link name="${name}_color_frame"/>
+      <!-- camera color joints and links -->
+      <joint name="${name}_color_joint" type="fixed">
+        <origin xyz="0 ${d435i_cam_depth_to_color_offset} 0" rpy="0 0 0"/>
+        <parent link="${name}_depth_frame"/>
+        <child link="${name}_color_frame"/>
+      </joint>
+      <link name="${name}_color_frame"/>
 
-    <joint name="${name}_color_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
-      <parent link="${name}_color_frame"/>
-      <child link="${name}_color_optical_frame"/>
-    </joint>
-    <link name="${name}_color_optical_frame"/>
+      <joint name="${name}_color_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+        <parent link="${name}_color_frame"/>
+        <child link="${name}_color_optical_frame"/>
+      </joint>
+      <link name="${name}_color_optical_frame"/>
 
-    <!-- camera accel joints and links -->
-    <joint name="${name}_accel_joint" type="fixed">
-      <origin xyz="-0.00174 0.00552 0.0176" rpy="0 0 0"/>
-      <parent link="${name}_link"/>
-      <child link="${name}_accel_frame"/>
-    </joint>
-    <link name="${name}_accel_frame"/>
+      <!-- camera accel joints and links -->
+      <joint name="${name}_accel_joint" type="fixed">
+        <origin xyz="-0.00174 0.00552 0.0176" rpy="0 0 0"/>
+        <parent link="${name}_link"/>
+        <child link="${name}_accel_frame"/>
+      </joint>
+      <link name="${name}_accel_frame"/>
 
-    <joint name="${name}_accel_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
-      <parent link="${name}_accel_frame"/>
-      <child link="${name}_accel_optical_frame"/>
-    </joint>
-    <link name="${name}_accel_optical_frame"/>
+      <joint name="${name}_accel_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+        <parent link="${name}_accel_frame"/>
+        <child link="${name}_accel_optical_frame"/>
+      </joint>
+      <link name="${name}_accel_optical_frame"/>
 
-    <!-- camera gyro joints and links -->
-    <joint name="${name}_gyro_joint" type="fixed">
-      <origin xyz="-0.00174 0.00552 0.0176" rpy="0 0 0"/>
-      <parent link="${name}_link"/>
-      <child link="${name}_gyro_frame"/>
-    </joint>
-    <link name="${name}_gyro_frame"/>
+      <!-- camera gyro joints and links -->
+      <joint name="${name}_gyro_joint" type="fixed">
+        <origin xyz="-0.00174 0.00552 0.0176" rpy="0 0 0"/>
+        <parent link="${name}_link"/>
+        <child link="${name}_gyro_frame"/>
+      </joint>
+      <link name="${name}_gyro_frame"/>
 
-    <joint name="${name}_gyro_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
-      <parent link="${name}_gyro_frame"/>
-      <child link="${name}_gyro_optical_frame"/>
-    </joint>
-    <link name="${name}_gyro_optical_frame"/>
+      <joint name="${name}_gyro_optical_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}"/>
+        <parent link="${name}_gyro_frame"/>
+        <child link="${name}_gyro_optical_frame"/>
+      </joint>
+      <link name="${name}_gyro_optical_frame"/>
+    </xacro:if>
 
     <!-- Realsense Gazebo Plugin -->
     <xacro:gazebo_d435i camera_name="${name}"
@@ -224,7 +229,8 @@ aluminum peripherial evaluation case.
 
                         enable_pointCloud="${enable_pointCloud}"
                         unite_imu_method="${unite_imu_method}"
-                        clip_distance="${clip_distance}"
+                        clip_distance_z_min="${clip_distance_z_min}"
+                        clip_distance_z_max="${clip_distance_z_max}"                        
                         align_depth="${align_depth}"
     />
 

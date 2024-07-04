@@ -4,7 +4,12 @@
   <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro" />
   
   <link name="base_link" />
-  <xacro:sensor_d405 parent="base_link" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
+  <!-- <xacro:sensor_d405 parent="base_link" use_nominal_extrinsics="$(arg use_nominal_extrinsics)">
     <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:sensor_d405> -->
+
+  <xacro:sensor_d405 parent="base_link" name="camera" 
+    topics_ns="camera" use_nominal_extrinsics="true" visualize_color="true" align_depth="true" enable_pointCloud="true">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
   </xacro:sensor_d405>
 </robot>
