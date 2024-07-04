@@ -23,33 +23,10 @@ aluminum peripherial evaluation case.
 
 <robot name="sensor_d405" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Includes -->
-  <xacro:include filename="$(find realsense2_description)/urdf/_d405.gazebo.xacro"/>
   <xacro:include filename="$(find realsense2_description)/urdf/_materials.urdf.xacro" />
   <xacro:include filename="$(find realsense2_description)/urdf/_usb_plug.urdf.xacro" />
 
-  <xacro:macro name="sensor_d405" params="parent
-                                          use_nominal_extrinsics:=false
-                                          name:=camera
-                                          topics_ns:=camera
-                                                              
-                                          color_width:=1920
-                                          color_height:=1080
-                                          color_fps:=30
-                                          visualize_color:=false
-
-                                          infra_width:=640
-                                          infra_height:=480
-                                          infra_fps:=30
-
-                                          clip_distance:=-1.0
-                                          depth_width:=1280
-                                          depth_height:=720
-                                          depth_fps:=30
-
-                                          align_depth:=false
-                                          enable_pointCloud:=false
-
-                                          *origin">
+  <xacro:macro name="sensor_d405" params="parent *origin name:=camera use_nominal_extrinsics:=false">
     <xacro:arg name="add_plug" default="false" />
     <xacro:property name="M_PI" value="3.1415926535897931" />
 
@@ -178,39 +155,11 @@ aluminum peripherial evaluation case.
       </joint>
       <link name="${name}_color_optical_frame"/>
     </xacro:if>
-    
-    <!-- usb_plug -->
+
     <xacro:if value="$(arg add_plug)">
       <xacro:usb_plug parent="${name}_link" name="${name}_usb_plug">
         <origin xyz="${-0.00153-d405_mesh_x_offset} ${d405_cam_width/2-d405_cam_depth_py} 0" rpy="${M_PI} 0 0"/>
       </xacro:usb_plug>
     </xacro:if>
-
-    <!-- Realsense Gazebo Plugin -->
-    <xacro:gazebo_d405 camera_name="${name}"
-                        topics_ns="${topics_ns}"
-                        reference_link="${name}_link"
-
-                        depth_optical_frame="${name}_depth_optical_frame"
-                        depth_width="${depth_width}"
-                        depth_height="${depth_height}"
-                        depth_fps="${depth_fps}"
-
-                        color_optical_frame="${name}_color_optical_frame"
-                        color_width="${color_width}"
-                        color_height="${color_height}"
-                        color_fps="${color_fps}"
-                        visualize_color="${visualize_color}"
-
-                        infrared1_optical_frame="${name}_left_ir_optical_frame"
-                        infrared2_optical_frame="${name}_right_ir_optical_frame"
-                        infra_width="${infra_width}"
-                        infra_height="${infra_height}"
-                        infra_fps="${infra_fps}"
-
-                        enable_pointCloud="${enable_pointCloud}"
-                        clip_distance="${clip_distance}"
-                        align_depth="${align_depth}"
-    />
   </xacro:macro>
 </robot>
