@@ -4,8 +4,8 @@ moveit_setup_assistant_config:
     relative_path: urdf/ur5e_cam.urdf.xacro
     xacro_args: ""
   SRDF:
-    relative_path: config/ur5e.srdf
+    relative_path: config/ur5e_robot.srdf
   CONFIG:
     author_name: upup
     author_email: 809790016@gms.tku.edu.tw
-    generated_timestamp: 1713434837
+    generated_timestamp: 1720150187

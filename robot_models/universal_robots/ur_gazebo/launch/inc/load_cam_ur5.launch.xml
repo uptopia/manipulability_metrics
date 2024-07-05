@@ -16,6 +16,3 @@
   <include file="$(dirname)/load_cam_ur.launch.xml" pass_all_args="true">
     <arg name="robot_model" value="ur5" />
   </include>
-
-  
-</launch>
