@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <robot name="realsense2_camera" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:arg name="use_nominal_extrinsics" default="false"/>
+
+  <xacro:arg name="name"                    default="camera"/>
+  <xacro:arg name="topics_ns"               default="camera"/>
+  <xacro:arg name="use_nominal_extrinsics"  default="false"/>
+  <xacro:arg name="visualize_color"         default="true"/>
+  <xacro:arg name="align_depth"             default="true"/>
+  <xacro:arg name="enable_pointCloud"       default="true"/>
+
   <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro" />
   
   <link name="base_link" />
@@ -8,8 +15,13 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:sensor_d405> -->
 
-  <xacro:sensor_d405 parent="base_link" name="camera" 
-    topics_ns="camera" use_nominal_extrinsics="true" visualize_color="true" align_depth="true" enable_pointCloud="true">
+  <xacro:sensor_d405 parent="base_link" 
+                    name="$(arg name)"
+                    topics_ns="$(arg topics_ns)"
+                    use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
+                    visualize_color="$(arg visualize_color)"
+                    align_depth="$(arg align_depth)"
+                    enable_pointCloud="$(arg enable_pointCloud)">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
   </xacro:sensor_d405>
 </robot>
