@@ -84,6 +84,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          belt12mm_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           camera_bottom_screw_frame:
             Alpha: 1
             Show Axes: false
@@ -230,6 +235,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          belt12mm_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           camera_bottom_screw_frame:
             Alpha: 1
             Show Axes: false
@@ -366,7 +376,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 3.3560800552368164
+      Distance: 1.7158159017562866
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -374,17 +384,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.1618237495422363
-        Y: -0.3605327606201172
-        Z: -1.341098823104403e-07
+        X: 1.1255844831466675
+        Y: -0.29135534167289734
+        Z: -2.5331917186122155e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.14479711651802063
+      Pitch: 0.42979687452316284
       Target Frame: base_link
-      Yaw: 5.219944953918457
+      Yaw: 5.369948387145996
     Saved: ~
 Window Geometry:
   Displays:
@@ -402,5 +412,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1182
-  X: 2085
-  Y: 96
+  X: 178
+  Y: 272

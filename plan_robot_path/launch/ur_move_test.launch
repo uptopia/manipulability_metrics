@@ -29,6 +29,7 @@
     <!-- UR5e_D405 config & MoveIt-->
     <group if="$(eval robot_name == 'ur5e')">
         <include file="$(find ur_gazebo)/launch/cam_ur5e_bringup.launch" />
+        <!-- <include file="$(find ur_gazebo)/launch/cam_ur5e_gripper_bringup.launch" /> -->
         <include file="$(find cam_ur5e_moveit_config)/launch/moveit_planning_execution.launch">
             <arg name="sim" default="$(arg sim)" />
         </include>

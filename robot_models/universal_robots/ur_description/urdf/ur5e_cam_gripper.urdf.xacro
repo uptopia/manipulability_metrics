@@ -33,16 +33,25 @@
     <origin xyz="0 0 0" rpy="0 -1.5707963268 0"/>
   </xacro:sensor_d405> -->
 
-  <!-- <xacro:sensor_d405 parent="flange"  -->
-  <xacro:sensor_d405 parent="wrist_3_link" 
+  <xacro:sensor_d405 parent="flange" 
                      name="$(arg name)"
                      topics_ns="$(arg topics_ns)"
                      use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
                      visualize_color="$(arg visualize_color)"
                      align_depth="$(arg align_depth)"
                      enable_pointCloud="$(arg enable_pointCloud)">
-    <!-- <origin xyz="0 0 0" rpy="0 -1.5707963268 0"/> -->
-    <!-- <origin xyz="0.032 0 0.045" rpy="0 -1.5707963268 0"/> -->
+    <!-- <origin xyz="-0.035 0 0.03" rpy="0 1.5707963268 0"/> -->
+    <origin xyz="0.032 0 0.045" rpy="0 -1.5707963268 0"/>
   </xacro:sensor_d405>
+
+
+  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <xacro:robotiq_arg2f_85 prefix=""/>
+
+  <joint name="ur5e_gripper_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 1.5707963268 0" />
+    <parent link="flange"/>
+    <child link="robotiq_arg2f_base_link"/>
+  </joint>
 
 </robot>
