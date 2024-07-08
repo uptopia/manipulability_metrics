@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
-     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
-<robot
-  name="d405_link">
-  <link
-    name="base_link">
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter  -0.0089242 -1.617E-09 -0.0023401-->
+<robot name="d405_link">
+
+  <link name="world"/>
+
+  <joint name="cam_d405_link" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <link name="base_link">
     <inertial>
       <origin
-        xyz="0.033794 0.03171 0.050026"
+        xyz="0 0 0.25"
         rpy="0 0 0" />
       <mass
         value="0.035381" />
       <inertia
         ixx="8.5948E-06"
-        ixy="6.3264E-07"
-        ixz="-4.704E-13"
-        iyy="1.6063E-05"
-        iyz="-3.6616E-13"
-        izz="8.6805E-06" />
+        ixy="-4.721E-13"
+        ixz="6.3264E-07"
+        iyy="8.6805E-06"
+        iyz="-3.6517E-13"
+        izz="1.6063E-05" />
     </inertial>
     <visual>
       <origin
