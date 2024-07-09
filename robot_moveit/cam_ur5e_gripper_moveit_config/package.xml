@@ -1,6 +1,6 @@
 <package>
 
-  <name>cam_ur5e_robotiq_moveit_config</name>
+  <name>cam_ur5e_gripper_moveit_config</name>
   <version>0.3.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the ur5e_robot with the MoveIt Motion Planning Framework
