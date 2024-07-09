@@ -29,12 +29,20 @@
     <!-- UR5e_D405 config & MoveIt-->
     <group if="$(eval robot_name == 'ur5e')">
         <include file="$(find ur_gazebo)/launch/cam_ur5e_bringup.launch" />
-        <!-- <include file="$(find ur_gazebo)/launch/cam_ur5e_gripper_bringup.launch" /> -->
         <include file="$(find cam_ur5e_moveit_config)/launch/moveit_planning_execution.launch">
             <arg name="sim" default="$(arg sim)" />
         </include>
         <include file="$(find cam_ur5e_moveit_config)/launch/moveit_rviz.launch"/>
     </group>
+
+    <!-- UR5e_D405_Robotiq2F85 config & MoveIt-->
+    <!-- <group if="$(eval robot_name == 'ur5e')">
+        <include file="$(find ur_gazebo)/launch/cam_ur5e_gripper_bringup.launch" />
+        <include file="$(find cam_ur5e_gripper_moveit_config)/launch/moveit_planning_execution.launch">
+            <arg name="sim" default="$(arg sim)" />
+        </include>
+        <include file="$(find cam_ur5e_gripper_moveit_config)/launch/moveit_rviz.launch"/>
+    </group> -->
 
     <!-- check m-score -->
     <node name="ur_move_test" pkg="plan_robot_path" type="ur_move_test.py" output="screen" respawn="true">

@@ -113,6 +113,25 @@
     <origin xyz="0.001 0 0" rpy="0 ${-M_PI/2} 0" />
   </xacro:connect_d405_link>
 
+  <!--Camera D405-->
+  <xacro:arg name="name"                    default="camera"/>
+  <xacro:arg name="topics_ns"               default="camera"/>
+  <xacro:arg name="use_nominal_extrinsics"  default="true"/>
+  <xacro:arg name="visualize_color"         default="true"/>
+  <xacro:arg name="align_depth"             default="true"/>
+  <xacro:arg name="enable_pointCloud"       default="true"/>
+  <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro" />
+
+  <xacro:sensor_d405 parent="connect_d405_base_link" 
+                     name="$(arg name)"
+                     topics_ns="$(arg topics_ns)"
+                     use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
+                     visualize_color="$(arg visualize_color)"
+                     align_depth="$(arg align_depth)"
+                     enable_pointCloud="$(arg enable_pointCloud)">
+    <origin xyz="-0.075 0 0.015" rpy="0 ${-M_PI*1.35} 0"/>
+  </xacro:sensor_d405>
+
   <!--Gripper Robotiq-2F85-->
   <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
   <xacro:robotiq_arg2f_85 prefix=""/>
