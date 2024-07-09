@@ -29,7 +29,11 @@
     NOTE: this imports the Gazebo-wrapper main macro, NOT the regular
           xacro macro (which is hosted by ur_description).
   -->
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+
+  <!--Robot UR5e-->
   <xacro:include filename="$(find ur_gazebo)/urdf/ur_cam_macro.xacro"/>
+  <!-- <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/> -->
 
   <!--Declare arguments -->
    <xacro:arg name="joint_limit_params" default=""/>
@@ -83,6 +87,7 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
+  <!--PU Belt-->
   <xacro:include filename="$(find belt12mm_description)/urdf/belt12mm.xacro"/>
   <xacro:belt12mm parent="base_link" prefix="belt12mm_">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
@@ -93,13 +98,28 @@
           <origin xyz="0.5 0.0 0" rpy="1.57 0 1.57"/>
   </joint>
 
-  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <!-- <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
   <xacro:robotiq_arg2f_85 prefix=""/>
 
   <joint name="flange_gripper_joint" type="fixed">
     <origin xyz="0 0 0" rpy="0 1.5707963268 0" />
     <parent link="flange"/>
     <child link="robotiq_arg2f_base_link"/>
-  </joint>
+  </joint> -->
+  
+  <!--Connect Camera Link-->
+  <xacro:include filename="$(find d405_link)/urdf/d405_link.urdf.xacro" />
+  <xacro:connect_d405_link parent="flange">
+    <origin xyz="0.001 0 0" rpy="0 ${-M_PI/2} 0" />
+  </xacro:connect_d405_link>
 
+  <!--Gripper Robotiq-2F85-->
+  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <xacro:robotiq_arg2f_85 prefix=""/>
+
+  <joint name="ur5e_gripper_link" type="fixed">
+    <origin xyz="0 0 -0.01" rpy="0 ${M_PI} 0" />
+    <parent link="connect_d405_base_link"/>
+    <child link="robotiq_arg2f_base_link"/>
+  </joint>
 </robot>
