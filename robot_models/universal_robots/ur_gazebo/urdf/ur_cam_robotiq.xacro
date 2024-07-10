@@ -29,7 +29,11 @@
     NOTE: this imports the Gazebo-wrapper main macro, NOT the regular
           xacro macro (which is hosted by ur_description).
   -->
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+
+  <!--Robot UR5e-->
   <xacro:include filename="$(find ur_gazebo)/urdf/ur_cam_macro.xacro"/>
+  <!-- <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/> -->
 
   <!--Declare arguments -->
    <xacro:arg name="joint_limit_params" default=""/>
@@ -82,7 +86,7 @@
     <child link="tool0_controller"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint> -->
-  
+
   <!--PU Belt-->
   <xacro:include filename="$(find belt12mm_description)/urdf/belt12mm.xacro"/>
   <xacro:belt12mm parent="base_link" prefix="belt12mm_">
@@ -94,6 +98,21 @@
           <origin xyz="0.5 0.0 0" rpy="1.57 0 1.57"/>
   </joint>
 
+  <!-- <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <xacro:robotiq_arg2f_85 prefix=""/>
+
+  <joint name="flange_gripper_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 1.5707963268 0" />
+    <parent link="flange"/>
+    <child link="robotiq_arg2f_base_link"/>
+  </joint> -->
+  
+  <!--Connect Camera Link-->
+  <xacro:include filename="$(find d405_link)/urdf/d405_link.urdf.xacro" />
+  <xacro:connect_d405_link parent="flange">
+    <origin xyz="0.001 0 0" rpy="0 ${-M_PI/2} 0" />
+  </xacro:connect_d405_link>
+
   <!--Camera D405-->
   <xacro:arg name="name"                    default="camera"/>
   <xacro:arg name="topics_ns"               default="camera"/>
@@ -103,14 +122,93 @@
   <xacro:arg name="enable_pointCloud"       default="true"/>
   <xacro:include filename="$(find realsense2_description)/urdf/_d405.urdf.xacro" />
 
-  <!-- <xacro:sensor_d405 parent="${prefix}wrist_3_link"  -->
-  <xacro:sensor_d405 parent="wrist_3_link"
-                    name="$(arg name)"
-                    topics_ns="$(arg topics_ns)"
-                    use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
-                    visualize_color="$(arg visualize_color)"
-                    align_depth="$(arg align_depth)"
-                    enable_pointCloud="$(arg enable_pointCloud)">
-    <origin xyz="0 0 0" rpy="0 -1.5707963268 0"/>
+  <xacro:sensor_d405 parent="connect_d405_base_link" 
+                     name="$(arg name)"
+                     topics_ns="$(arg topics_ns)"
+                     use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
+                     visualize_color="$(arg visualize_color)"
+                     align_depth="$(arg align_depth)"
+                     enable_pointCloud="$(arg enable_pointCloud)">
+    <origin xyz="-0.075 0 0.015" rpy="0 ${-M_PI*1.35} 0"/>
   </xacro:sensor_d405>
+
+  <!--Gripper Robotiq-2F85-->
+  <!-- <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <xacro:robotiq_arg2f_85 prefix=""/>
+
+  <joint name="ur5e_gripper_link" type="fixed">
+    <origin xyz="0 0 -0.01" rpy="0 ${M_PI} 0" />
+    <parent link="connect_d405_base_link"/>
+    <child link="robotiq_arg2f_base_link"/>
+  </joint> -->
+  <xacro:include filename="$(find robotiq_description)/urdf/robotiq_85_gripper.urdf.xacro" />
+  
+  <!-- Robotiq Coupler -->
+  <!--  + Height added by the coupler: 8mm -->
+  <!--  + Reference frame: at the middle (4mm) -->
+  <link name="robotiq_coupler">
+    <visual>
+      <geometry>
+        <mesh filename="package://robotiq_description/meshes/robotiq_85_coupler.stl" />
+      </geometry>
+      <!-- <material name="flat_black"/> -->
+      <material name="LightGrey">
+        <color rgba="0.7 0.7 0.7 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://robotiq_description/meshes/robotiq_85_coupler.stl" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="2.073e-05   1.45286e-03  -1.1049e-03" rpy="0 0 0" />
+      <mass value="0.168" />
+      <inertia ixx="6.69695624e-05" ixy="5.21511788e-09" ixz="-2.74383009e-08" 
+               iyy="7.85088161e-05" iyz="5.41105193e-07" izz="1.41819717e-04"/>
+    </inertial>
+  </link>
+
+  <joint name="robotiq_coupler_joint" type="fixed">
+    <origin xyz="0 0 0.004" rpy="0 0 ${-pi/2.0}" />
+    <parent link="tool0"/>
+    <child link="robotiq_coupler"/>
+  </joint>
+  <gazebo reference="robotiq_coupler">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+  
+  <!-- Attach the robotiq 85 gripper -->
+  <xacro:robotiq_85_gripper prefix="" parent="robotiq_coupler" >
+    <origin xyz="0 0 0.004" rpy="0 ${-pi/2} ${pi}"/>
+  </xacro:robotiq_85_gripper> 
+  
+  <!-- Gazebo FT sensor plugin -->
+  <gazebo reference="wrist_3_joint">
+    <provideFeedback>true</provideFeedback>
+  </gazebo>
+  <gazebo>
+    <plugin name="ft_sensor_plugin" filename="libgazebo_ros_ft_sensor.so">
+      <updateRate>250.0</updateRate>
+      <topicName>ft_sensor/raw</topicName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <jointName>wrist_3_joint</jointName>
+    </plugin>
+  </gazebo>
+  
+  <!-- Gazebo grasping plugin -->
+  <gazebo>
+    <gripper name="gazebo_gripper">
+      <grasp_check>
+        <attach_steps>2</attach_steps>    <!-- default: 20 -->
+        <detach_steps>2</detach_steps>    <!-- default: 40 -->
+        <min_contact_count>3</min_contact_count>
+      </grasp_check>
+      <gripper_link>robotiq_85_left_finger_tip_link</gripper_link>
+      <gripper_link>robotiq_85_right_finger_tip_link</gripper_link>
+      <palm_link>robotiq_85_base_link</palm_link>
+    </gripper>
+  </gazebo>
 </robot>

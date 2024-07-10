@@ -109,7 +109,10 @@
     <gazebo reference="${prefix}wrist_2_link">
       <selfCollide>true</selfCollide>
     </gazebo>
-    <gazebo reference="${prefix}ee_link">
+    <!-- <gazebo reference="${prefix}ee_link">
+      <selfCollide>true</selfCollide>
+    </gazebo> -->
+    <gazebo reference="${prefix}flange">
       <selfCollide>true</selfCollide>
     </gazebo>
 

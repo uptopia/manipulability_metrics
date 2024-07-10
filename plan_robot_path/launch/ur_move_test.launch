@@ -2,22 +2,21 @@
 
 <launch>
     <arg name="sim"          default="true" />
-    <!-- <arg name="cam_used"     default="true" /> -->
     <arg name="robot_name"   default="ur5e" />
     <arg name="group_name"   default="manipulator"/>
     <arg name="base_frame"   default="base_link"/>
     <!-- <arg name="cam_frame"    default="camera_color_optical_frame"/> -->
 
-    <!-- UR5 config & MoveIt-->
-    <group if="$(eval robot_name == 'ur5')">
+    <!-- [ok] UR5 config & MoveIt-->
+    <!-- <group if="$(eval robot_name == 'ur5')">
         <include file="$(find ur_gazebo)/launch/ur5_bringup.launch" />
         <include file="$(find ur5_moveit_config)/launch/moveit_planning_execution.launch">
             <arg name="sim" default="$(arg sim)" />
         </include>
         <include file="$(find ur5_moveit_config)/launch/moveit_rviz.launch"/>
-    </group>
+    </group> -->
 
-    <!-- UR5e config & MoveIt-->
+    <!-- [ok] UR5e config & MoveIt-->
     <!-- <group if="$(eval robot_name == 'ur5e')">
         <include file="$(find ur_gazebo)/launch/ur5e_bringup.launch" />
         <include file="$(find ur5e_moveit_config)/launch/moveit_planning_execution.launch">
@@ -26,7 +25,7 @@
         <include file="$(find ur5e_moveit_config)/launch/moveit_rviz.launch"/>
     </group> -->
 
-    <!-- UR5e_D405 config & MoveIt-->
+    <!-- [ok] UR5e_D405 config & MoveIt-->
     <!-- <group if="$(eval robot_name == 'ur5e')">
         <include file="$(find ur_gazebo)/launch/cam_ur5e_bringup.launch" />
         <include file="$(find cam_ur5e_moveit_config)/launch/moveit_planning_execution.launch">
@@ -35,14 +34,24 @@
         <include file="$(find cam_ur5e_moveit_config)/launch/moveit_rviz.launch"/>
     </group> -->
 
-    <!-- UR5e_D405_Robotiq2F85 config & MoveIt-->
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <!-- [error] UR5e_D405_Robotiq2F85 config & MoveIt-->
+    <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
     <group if="$(eval robot_name == 'ur5e')">
         <include file="$(find ur_gazebo)/launch/cam_ur5e_gripper_bringup.launch" />
         <include file="$(find cam_ur5e_gripper_moveit_config)/launch/moveit_planning_execution.launch">
             <arg name="sim" default="$(arg sim)" />
         </include>
         <include file="$(find cam_ur5e_gripper_moveit_config)/launch/moveit_rviz.launch"/>
+    </group> -->
+
+   <!-- [ok] UR5e_Link_D405_Robotiq2F85 config & MoveIt-->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <group if="$(eval robot_name == 'ur5e')">
+        <include file="$(find ur_gazebo)/launch/cam_ur5e_robotiq_bringup.launch" />
+        <include file="$(find cam_ur5e_robotiq_moveit_config)/launch/moveit_planning_execution.launch">
+            <arg name="sim" default="$(arg sim)" />
+        </include>
+        <include file="$(find cam_ur5e_robotiq_moveit_config)/launch/moveit_rviz.launch"/>
     </group>
 
     <!-- check m-score -->
@@ -50,7 +59,6 @@
         <param name="group_name" value="$(arg group_name)" />
         <param name="base_frame" value="$(arg base_frame)" />
     </node>
-
 
     <!-- <node name="rotate_single_joint" pkg="plan_robot_path" type="rotate_single_joint.py" output="screen" respawn="true">
         <param name="robot_name" value="$(arg robot_name)" />
