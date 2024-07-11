@@ -22,8 +22,10 @@ hardware_interface:
 # joint_state_controller:
 #   type: joint_state_controller/JointStateController
 #   publish_rate: 50
+
 controller_list:
   - name: manipulator_controller
+# manipulator_controller:
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory
@@ -34,7 +36,9 @@ controller_list:
       - wrist_1_joint
       - wrist_2_joint
       - wrist_3_joint
+
   - name: gripper_controller
+# gripper_controller:
     action_ns: follow_joint_trajectory
     default: True
     type: FollowJointTrajectory

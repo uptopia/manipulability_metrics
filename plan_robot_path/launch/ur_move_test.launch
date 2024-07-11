@@ -65,5 +65,5 @@
         <param name="group_name" value="$(arg group_name)" />
         <param name="base_frame" value="$(arg base_frame)" />
     </node> -->
-    
+    <node name="gui_controller" pkg="rqt_joint_trajectory_controller" type="rqt_joint_trajectory_controller"/>
 </launch>

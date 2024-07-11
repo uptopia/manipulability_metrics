@@ -3,7 +3,6 @@
   <arg name="debug" default="false" />
 
   <!-- Remap follow_joint_trajectory -->
-  <!-- <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/eff_joint_traj_controller/follow_joint_trajectory"/> -->
   <remap if="$(arg sim)" from="/manipulator_controller/follow_joint_trajectory" to="/eff_joint_traj_controller/follow_joint_trajectory"/>
   <!-- <remap if="$(arg sim)" from="/gripper_controller/follow_joint_trajectory" to="/test_gripper_controller/follow_joint_trajectory"/> -->
 
