@@ -32,7 +32,7 @@
   <xacro:property name="M_PI" value="3.1415926535897931" />
 
   <!--Robot UR5e-->
-  <xacro:include filename="$(find ur_gazebo)/urdf/ur_cam_macro.xacro"/>
+  <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/>
   <!-- <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/> -->
 
   <!--Declare arguments -->
@@ -48,9 +48,9 @@
           controller .yaml files in the 'config' directory.
   --> 
    <xacro:arg name="transmission_hw_interface" default="hardware_interface/EffortJointInterface"/>
-   <xacro:arg name="safety_limits" default="false"/>
-   <xacro:arg name="safety_pos_margin" default="0.15"/>
-   <xacro:arg name="safety_k_position" default="20"/>
+   <xacro:arg name="safety_limits"             default="false"/>
+   <xacro:arg name="safety_pos_margin"         default="0.15"/>
+   <xacro:arg name="safety_k_position"         default="20"/>
 
    <!-- Instantiate the Gazebo robot and pass it all the required arguments. -->
    <xacro:ur_robot_gazebo

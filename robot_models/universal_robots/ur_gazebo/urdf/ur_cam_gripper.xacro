@@ -32,7 +32,7 @@
   <xacro:property name="M_PI" value="3.1415926535897931" />
 
   <!--Robot UR5e-->
-  <xacro:include filename="$(find ur_gazebo)/urdf/ur_cam_macro.xacro"/>
+  <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/>
   <!-- <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/> -->
 
   <!--Declare arguments -->

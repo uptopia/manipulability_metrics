@@ -29,7 +29,7 @@
     NOTE: this imports the Gazebo-wrapper main macro, NOT the regular
           xacro macro (which is hosted by ur_description).
   -->
-  <xacro:include filename="$(find ur_gazebo)/urdf/ur_cam_macro.xacro"/>
+  <xacro:include filename="$(find ur_gazebo)/urdf/ur_macro.xacro"/>
 
   <!--Declare arguments -->
    <xacro:arg name="joint_limit_params" default=""/>
