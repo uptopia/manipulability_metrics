@@ -3,8 +3,10 @@
   <arg name="debug" default="false" />
 
   <!-- Remap follow_joint_trajectory -->
-  <remap if="$(arg sim)" from="/manipulator_controller/follow_joint_trajectory" to="/eff_joint_traj_controller/follow_joint_trajectory"/>
+  <!-- <remap if="$(arg sim)" from="/manipulator_controller/follow_joint_trajectory" to="/eff_joint_traj_controller/follow_joint_trajectory"/> -->
   <!-- <remap if="$(arg sim)" from="/gripper_controller/follow_joint_trajectory" to="/test_gripper_controller/follow_joint_trajectory"/> -->
+  <remap if="$(arg sim)" from="moveit_manipulator_controller/follow_joint_trajectory" to="/manipulator_controller/follow_joint_trajectory"/>
+  <remap if="$(arg sim)" from="moveit_gripper_controller/follow_joint_trajectory" to="/gripper_controller/follow_joint_trajectory"/>
 
   <!-- Launch moveit -->
   <include file="$(find cam_ur5e_robotiq_moveit_config)/launch/move_group.launch">
