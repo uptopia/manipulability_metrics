@@ -32,6 +32,7 @@ add_library(${PROJECT_NAME}
   src/ellipsoid.cpp
   src/inverse_condition_number.cpp
   src/manipulability_measure.cpp
+  src/m_score_measure.cpp
   src/markers.cpp
   src/minimum_singular_value.cpp
   src/similarity.cpp

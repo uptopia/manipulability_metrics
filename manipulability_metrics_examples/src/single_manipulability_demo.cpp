@@ -19,6 +19,7 @@
 #include <manipulability_metrics/kinematics/chain.h>
 #include <manipulability_metrics/metrics/inverse_condition_number.h>
 #include <manipulability_metrics/metrics/manipulability_measure.h>
+#include <manipulability_metrics/metrics/m_score_measure.h>
 #include <manipulability_metrics/metrics/minimum_singular_value.h>
 #include <manipulability_metrics/metrics/tomm.h>
 #include <manipulability_metrics/util/ellipsoid.h>
@@ -31,6 +32,8 @@
 
 #include <ros/ros.h>
 
+#include <iostream>
+using namespace std;
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "single_manipulability_demo");
@@ -56,18 +59,34 @@ int main(int argc, char** argv)
   const auto marker_pub = nh.advertise<visualization_msgs::MarkerArray>("manipulability_markers", 1);
 
   const auto joint_permutation = utils::permutationFromJointState(chain_joints);
+  // cout <<"==========>joint_permutation:";//<<joint_permutation<<endl;
 
   const auto joint_state_cb = utils::makeCallback<sensor_msgs::JointState>([&](const auto& msg) {
     const auto jnt_array = utils::extractJoints(msg.position, joint_permutation);
+    // cout <<"==========>joint_permutation:"<<endl;
+    // for (std::size_t i = 0; i < joint_permutation.size(); ++i)
+    //   cout << joint_permutation[i]<<"\t";
+    // cout <<endl;
+    // cout <<"==========>msg.position:"<<endl;
+    // for (std::size_t i = 0; i < msg.position.size(); ++i)
+    //   cout << msg.position[i]<<"\t";
+    // cout <<endl;
+    // cout <<"==========>jnt_array:"<<endl;
+    // for (std::size_t i = 0; i < joint_permutation.size(); ++i){
+    //   // jnt_array(i) = msg.positions[permutation[i]];
+    //   cout << msg.position[joint_permutation[i]]<<"\t";
+    // }
 
     const auto icn = manipulability_metrics::inverseConditionNumber(chain, jnt_array);
     const auto mm = manipulability_metrics::manipulabilityMeasure(chain, jnt_array);
     const auto msv = manipulability_metrics::minimumSingularValue(chain, jnt_array);
     const auto tomm = manipulability_metrics::tomm(chain, desired_manipulability, jnt_array);
-
-    ROS_INFO_STREAM("Got an updated joint state. Computed metrics:\nInverse Condition Number: "
-                    << icn << "\nManipulability Measure: " << mm << "\nMinimum Singular Value: " << msv
-                    << "\nTOMM: " << tomm);
+    const auto mscore = manipulability_metrics::mScoreMeasure(jnt_array);
+                ROS_INFO_STREAM("Got an updated joint state. Computed metrics:\nInverse Condition Number: " << icn \
+                    << "\nManipulability Measure: " << mm \
+                    << "\nMinimum Singular Value: " << msv \
+                    << "\nTOMM:                   " << tomm \
+                    << "\nM Score Value:          " << mscore);
 
     const auto manipulability_markers = manipulability_metrics::ellipsoidMarkers(chain, jnt_array);
     marker_pub.publish(manipulability_markers);

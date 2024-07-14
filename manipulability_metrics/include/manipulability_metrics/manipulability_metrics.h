@@ -24,6 +24,7 @@
 #include <manipulability_metrics/metrics/damm.h>
 #include <manipulability_metrics/metrics/inverse_condition_number.h>
 #include <manipulability_metrics/metrics/manipulability_measure.h>
+#include <manipulability_metrics/metrics/m_score_measure.h>
 #include <manipulability_metrics/metrics/minimum_singular_value.h>
 #include <manipulability_metrics/metrics/todamm.h>
 #include <manipulability_metrics/metrics/tomm.h>
