@@ -66,10 +66,11 @@ double mScoreMeasure(const KDL::JntArray& joint_positions)
     std::vector<float> Selbow_score = {};
     std::vector<float> Swrist_score = {};
 
+    // joint_positions in radian
     float tot_joint_num = joint_positions.rows();//.columns();
     for(int cnt=0; cnt<tot_joint_num; cnt++)
     {
-        float ang = joint_positions(cnt);
+        float ang = joint_positions(cnt)*360.0/M_PI;
         float min_angle, max_angle;
         cout <<"joint #:"<< cnt <<"; joint_angle: "<< ang <<endl;
 
