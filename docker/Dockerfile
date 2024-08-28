@@ -107,6 +107,7 @@ RUN apt update \
         ros-$ROS_DISTRO-joint-state-controller \
         ros-$ROS_DISTRO-effort-controllers \
         ros-$ROS_DISTRO-position-controllers \
+        ros-$ROS_DISTRO-jsk-rviz-plugins \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
     # ros-$ROS_DISTRO-joint-* \
